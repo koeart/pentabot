@@ -13,7 +13,7 @@ config_help['lastrss']= "\n".join(dict(config.items('RSS')).keys())
 
 
 def format_help(fun):
-        fun.__doc__ = fun.__doc__.format(config_help)
+        fun.__doc__ = fun.__doc__.format(**config_help) #** dict entpacken, * listen entpacken 
         return fun
 
 class pentaBot(JabberBot):
