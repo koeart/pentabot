@@ -7,6 +7,7 @@
 from jabberbot import JabberBot, botcmd
 import ConfigParser
 import feedparser
+import datetime
 
 # secret
 secretfile = ".pentabot.login"
@@ -34,12 +35,93 @@ class pentaBot(JabberBot):
     """
 
     @botcmd
+    def serverinfo( self, mess, args):
+        """Zeige Informationen ueber den Server"""
+        version = open('/proc/version').read().strip()
+        loadavg = open('/proc/loadavg').read().strip()
+
+        return '%s\n\n%s' % ( version, loadavg, )
+
+    @botcmd
+    def time( self, mess, args):
+        """Zeige die aktuelle Server Zeit"""
+        return str(datetime.datetime.now())
+
+    @botcmd
+    def rot13( self, mess, args):
+        """Gibt <string> in rot13"""
+        return args.encode('rot13')
+
+    @botcmd
+    def whoami( self, mess, args):
+        """Zeigt dir dein Username"""
+        return mess.getFrom().getStripped()
+
+    @botcmd
+    def roster( self, mess, args):
+        """Wiedergabe der aktuellen Roster"""
+        roster = ", ".join(self.conn.Roster.getItems())
+        return roster
+
+    @botcmd
+    def group( self, mess, args):
+        """
+        Bearbeiten von Gruppen
+        Benutze: group (add|del|list) jid <groups>
+        """
+        args = args.strip().split(' ')
+        if len(args) <= 1:
+            group = 'Bitte rufe \"help group\" fuer moegliche Optionen auf!'
+        else:
+            try:
+                groups = self.conn.Roster.getGroups(args[1])
+                group = "\n"
+            except:
+                group = "\n"
+            if args[0] == "add":
+                try:
+                    groups.append(", ".join(args[2:]))
+                    self.conn.Roster.setItem(args[1], None, groups)
+                    group += "Fuege %s zu %s" % (args[1], ", ".join(groups))
+                except:
+                    group += "Beim gruppen erweitern trat ein Fehler auf!"
+            elif args[0] == "del":
+                if args[2] == "all":
+                    try:
+                        self.conn.Roster.setItem(args[1], None, [])
+                        group += "Loesche %s von %s" % (args[1], ", ".join(groups))
+                    except:
+                        group += "Beim Loeschen von %s aus %s trat ein Fehler auf!" % (args[1], args[2])
+                else:
+                    if args[2] in groups:
+                        groups.remove(args[2])
+                        try:
+                            self.conn.Roster.setItem(args[1], None, groups)
+                            group += "Loesche %s von %s" % (args[1], args[2])
+                        except:
+                            group += "Beim Loeschen von %s aus %s trat ein Fehler auf!" % (args[1], args[2])
+                    else:
+                        group += "%s ist nicht in %s" % (args[1], args[2])
+            elif args[0] == "list":
+                list_group = ", ".join(groups)
+                if not list_group:
+                    group += "%s ist in keiner Gruppe" % args[1]
+                else:
+                    group += "%s ist in de{n,r} Gruppe(n) %s " % (args[1], list_group)
+            else:
+                print "muh"
+                group += "Befehl '%s' nicht gefunden!\n" % args[0]
+                group += "Bitte rufe 'help group' fuer moegliche Optionen auf!"
+        return group
+
+    @botcmd
     def helloworld( self, mess, args):
         """ Hello World, the botway"""
-        return 'Hello World, the botway'
+        return 'Hello World, the botway!'
+
     @botcmd
     def echo( self, mess, args):
-        '''ein echo fuer die welt'''
+        """ein echo fuer die welt"""
         print mess
         print args
         return args
@@ -47,11 +129,11 @@ class pentaBot(JabberBot):
     @format_help
     @botcmd
     def last( self, mess, args):
-        '''
-        letzte Episode
+        """
+        Gibt die letzten News zu PentaCast, PentaRadio und PentaMusic wieder
         Moegliche Eingaben:
         {lastrss}
-        '''
+        """
         args = args.strip().split(' ')
         if args[0] in dict(config.items('RSS')).keys():
             message = "\n"
@@ -66,5 +148,7 @@ class pentaBot(JabberBot):
 
 if __name__ == "__main__":
     #start Server
-    pentabot = pentaBot(secret.get('pentaBotConf', 'username'), secret.get('pentaBotConf', 'password'), secret.get('pentaBotConf', 'resource'), bool(secret.get('pentaBotConf', 'debug')))
-    pentabot.serve_forever()
+    while True:
+        pentabot = pentaBot(secret.get('pentaBotConf', 'username'), secret.get('pentaBotConf', 'password'), secret.get('pentaBotConf', 'resource'), bool(secret.get('pentaBotConf', 'debug')))
+        pentabot.join_room("c3d2@muc.hq.c3d2.de", "PentaBot")
+        pentabot.serve_forever()
