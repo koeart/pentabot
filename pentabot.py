@@ -1,4 +1,9 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# a simple Jabber Bot serving pentamedia to you and your news to pentamedia
+
+
 from jabberbot import JabberBot, botcmd
 import ConfigParser
 import feedparser
