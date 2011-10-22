@@ -8,6 +8,9 @@ from jabberbot import JabberBot, botcmd
 import ConfigParser
 import feedparser
 import datetime
+import time
+import urllib
+import urllib2
 
 # secret
 secretfile = ".pentabot.login"
@@ -115,6 +118,37 @@ class pentaBot(JabberBot):
         return group
 
     @botcmd
+    def abfahrt( self, mess, args):
+        args = args.strip().split(' ')
+        if len(args) < 1:
+            abfahrt = "usage: abfahrt <Haltestellenname>"
+        else:
+            print args
+            abfahrt = ""
+            values = {"ort": "Dresden",
+                      "hst": " ".join(args[0:]),
+                      "vz": LAUFZEIT,
+                      "timestamp": int(time.time())}
+
+            url_values = urllib.urlencode(values)
+            full_url = QUERYURL + "?" + url_values
+
+            data = urllib2.urlopen(full_url)
+            dare = data.read()
+            dare = dare.replace("[[", "")
+            dare = dare.replace("]]", "")
+
+            abfahrt += "\n"
+            abfahrt += "%6s %-19s %7s\n" % ("Linie", "Richtung", "Abfahrt")
+
+            for line in dare.split("],["):
+                outp = line.replace("\"", "").split(",")
+                abfahrt += "%6s %-19s %7s\n" % (outp[0], outp[1], outp[2])
+
+        return abfahrt
+
+
+    @botcmd
     def helloworld( self, mess, args):
         """ Hello World, the botway"""
         return 'Hello World, the botway!'
@@ -147,8 +181,10 @@ class pentaBot(JabberBot):
         return message
 
 if __name__ == "__main__":
+    LAUFZEIT = 0
+    QUERYURL = "http://212.111.236.141/abfahrtsmonitor/Abfahrten.do"
     #start Server
     while True:
         pentabot = pentaBot(secret.get('pentaBotConf', 'username'), secret.get('pentaBotConf', 'password'), secret.get('pentaBotConf', 'resource'), bool(secret.get('pentaBotConf', 'debug')))
-        pentabot.join_room("c3d2@muc.hq.c3d2.de", "PentaBot")
+        #pentabot.join_room("c3d2@muc.hq.c3d2.de", "PentaBot")
         pentabot.serve_forever()
