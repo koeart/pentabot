@@ -41,10 +41,14 @@ class pentaBot(JabberBot):
                 {lastrss}
                 '''
 
-                f = feedparser.parse('http://c3d2.de/' + args + '.xml').get('entries')[0]
+                if args in dict(config.items('RSS')).keys():
+
+                        f = feedparser.parse('http://c3d2.de/' + args + '.xml').get('entries')[0]
+                        message = 'Titel: ' + f.get('title') + '\n' + 'URL:' + f.get('link') + '\n'
+                else:
+                        message = 'Bitte rufe \"help last\" fuer moegliche Optionen auf!'
                 return(
-                'Titel: ' + f.get('title') + '\n' +
-                'URL:' + f.get('link') + '\n'
+                message
                 )
 
 #start Server
