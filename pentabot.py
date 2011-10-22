@@ -7,8 +7,14 @@
 from jabberbot import JabberBot, botcmd
 import ConfigParser
 import feedparser
+
+#secret
+secretfile = ".pentabot.login"
+secret = ConfigParser.RawConfigParser()
+secret.read([secretfile, secretfile])
+
 # Configuration
-configfile = ".pentabot.conf"
+configfile = "pentabot.conf"
 config = ConfigParser.RawConfigParser()
 config.read([configfile, configfile])
 
@@ -57,6 +63,6 @@ class pentaBot(JabberBot):
                 )
 
 #start Server
-pentabot = pentaBot(config.get('pentaBotConf', 'username'), config.get('pentaBotConf', 'password'))
+pentabot = pentaBot(secret.get('pentaBotConf', 'username'), secret.get('pentaBotConf', 'password'))
 
 pentabot.serve_forever()
