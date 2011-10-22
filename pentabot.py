@@ -112,7 +112,6 @@ class pentaBot(JabberBot):
                 else:
                     group += "%s ist in de{n,r} Gruppe(n) %s " % (args[1], list_group)
             else:
-                print "muh"
                 group += "Befehl '%s' nicht gefunden!\n" % args[0]
                 group += "Bitte rufe 'help group' fuer moegliche Optionen auf!"
         return group
@@ -123,7 +122,6 @@ class pentaBot(JabberBot):
         if len(args) < 1:
             abfahrt = "usage: abfahrt <Haltestellenname>"
         else:
-            print args
             abfahrt = ""
             values = {"ort": "Dresden",
                       "hst": " ".join(args[0:]),
@@ -156,8 +154,6 @@ class pentaBot(JabberBot):
     @botcmd
     def echo( self, mess, args):
         """ein echo fuer die welt"""
-        print mess
-        print args
         return args
 
     @format_help
