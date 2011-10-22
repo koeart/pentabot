@@ -8,7 +8,7 @@ from jabberbot import JabberBot, botcmd
 import ConfigParser
 import feedparser
 
-#secret
+# secret
 secretfile = ".pentabot.login"
 secret = ConfigParser.RawConfigParser()
 secret.read([secretfile, secretfile])
@@ -18,51 +18,53 @@ configfile = "pentabot.conf"
 config = ConfigParser.RawConfigParser()
 config.read([configfile, configfile])
 
-config_help= {}
-config_help['lastrss']= "\n".join(dict(config.items('RSS')).keys())
-
-
+# feed dict
+feed_help= {}
+feed_help['lastrss']= "\n".join(dict(config.items('RSS')).keys())
 
 def format_help(fun):
-        fun.__doc__ = fun.__doc__.format(**config_help) #** dict entpacken, * listen entpacken 
-        return fun
+    fun.__doc__ = fun.__doc__.format(**feed_help) #** dict entpacken, * listen entpacken 
+    return fun
 
 class pentaBot(JabberBot):
-        """
-        pentabot. It shall server you at your fingertips. And you shall serve him. With News for pentaradio.
-        For more info: http://github.com/koeart/pentabot
-        koeart <at remove this> zwoelfelf <this as well> <net>
-        """
+    """
+    pentabot. It shall server you at your fingertips. And you shall serve him. With News for pentaradio.
+    For more info: http://github.com/koeart/pentabot
+    koeart <at remove this> zwoelfelf <this as well> <net>
+    """
 
-        @botcmd
-        def helloworld( self, mess, args):
-                """ Hello World, the botway"""
-                return 'Hello World, the botway'
-        @botcmd
-        def echo(self,mess,args):
-                '''ein echo fuer die welt'''
-                return args
+    @botcmd
+    def helloworld( self, mess, args):
+        """ Hello World, the botway"""
+        return 'Hello World, the botway'
+    @botcmd
+    def echo( self, mess, args):
+        '''ein echo fuer die welt'''
+        print mess
+        print args
+        return args
 
-        @format_help
-        @botcmd
-        def last( self, mess, args):
-                '''
-                letzte Episode
-                Moegliche Eingaben:
-                {lastrss}
-                '''
+    @format_help
+    @botcmd
+    def last( self, mess, args):
+        '''
+        letzte Episode
+        Moegliche Eingaben:
+        {lastrss}
+        '''
+        args = args.strip().split(' ')
+        if args[0] in dict(config.items('RSS')).keys():
+            message = "\n"
+            if len(args) == 1:
+                args.append('1')
+            for loop in range(int(args[1])):
+                f = feedparser.parse(config.get('RSS', args[0])).get('entries')[loop]
+                message += 'Titel: ' + f.get('title') + '\n' + 'URL: ' + f.get('link') + '\n'
+        else:
+            message = 'Bitte rufe \"help last\" fuer moegliche Optionen auf!'
+        return message
 
-                if args in dict(config.items('RSS')).keys():
-
-                        f = feedparser.parse(config.get('RSS', args)).get('entries')[0]
-                        message = 'Titel: ' + f.get('title') + '\n' + 'URL: ' + f.get('link') + '\n'
-                else:
-                        message = 'Bitte rufe \"help last\" fuer moegliche Optionen auf!'
-                return(
-                message
-                )
-
-#start Server
-pentabot = pentaBot(secret.get('pentaBotConf', 'username'), secret.get('pentaBotConf', 'password'))
-
-pentabot.serve_forever()
+if __name__ == "__main__":
+    #start Server
+    pentabot = pentaBot(secret.get('pentaBotConf', 'username'), secret.get('pentaBotConf', 'password'), secret.get('pentaBotConf', 'resource'), bool(secret.get('pentaBotConf', 'debug')))
+    pentabot.serve_forever()
