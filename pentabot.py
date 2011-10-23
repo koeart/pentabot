@@ -30,12 +30,28 @@ def format_help(fun):
     fun.__doc__ = fun.__doc__.format(**feed_help) #** dict entpacken, * listen entpacken 
     return fun
 
+
 class pentaBot(JabberBot):
     """
     pentabot. It shall server you at your fingertips. And you shall serve him. With News for pentaradio.
     For more info: http://github.com/koeart/pentabot
     koeart <at remove this> zwoelfelf <this as well> <net>
     """
+    @botcmd(hidden=true)
+    def check_group( self, mess, args):
+        '''
+            Gibt Gruppenzugehörigkeit als Bool
+
+            Usage: check_group <jid> <group>
+        '''
+        in_group = 0
+        jid = args[0]
+        groups = self.conn.Roster.getGroups(args[0])
+        if args[1] in groups:
+            in_group = 1
+    return in_group
+    
+
 
     @botcmd
     def serverinfo( self, mess, args):
