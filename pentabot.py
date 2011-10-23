@@ -120,16 +120,20 @@ class pentaBot(JabberBot):
     def abfahrt( self, mess, args):
         args = args.strip().split(' ')
         if len(args) < 1:
-            abfahrt = "usage: abfahrt <Haltestellenname>"
+            abfahrt = "Benutze: abfahrt <Haltestellenname>"
         else:
             abfahrt = ""
+            if len(args) == 1:
+                laufzeit = config.get("bot", "laufzeit")
+            else:
+                laufzeit = args[-1]
             values = {"ort": "Dresden",
                       "hst": " ".join(args[0:]),
-                      "vz": LAUFZEIT,
+                      "vz": laufzeit,
                       "timestamp": int(time.time())}
 
             url_values = urllib.urlencode(values)
-            full_url = QUERYURL + "?" + url_values
+            full_url = config.get("bot", "abfahrt_url") + "?" + url_values
 
             data = urllib2.urlopen(full_url)
             dare = data.read()
@@ -177,8 +181,6 @@ class pentaBot(JabberBot):
         return message
 
 if __name__ == "__main__":
-    LAUFZEIT = 0
-    QUERYURL = "http://212.111.236.141/abfahrtsmonitor/Abfahrten.do"
     #start Server
     while True:
         pentabot = pentaBot(secret.get('pentaBotConf', 'username'), secret.get('pentaBotConf', 'password'), secret.get('pentaBotConf', 'resource'), bool(secret.get('pentaBotConf', 'debug')))
