@@ -62,11 +62,27 @@ class pentaBot(JabberBot):
         A Cookie you can trust and accept.
         Just run fortune
         '''
+        fortune = ''
         try:
-            fortune = os.popen('/usr/games/fortune').read()
+            fortune += os.popen('/usr/games/fortune').read()
         except:
-            fortune = 'Your fortune unforseeable'
+            fortune += 'Your fortune unforseeable'
         return ('Your Cookie reads:\n' + fortune)
+
+    @botcmd
+    def ddate(self, mess, args):
+        '''ddate
+        '''
+        args = args.strip().split(' ')
+        ddate = ''
+        if len(args) <= 1 :
+            ddate += os.popen('/usr/bin/ddate').read()
+        elif len(args) == 3:
+            ddate += os.popen('/usr/bin/ddate '+args[0]+' '+ args[1]+' '+ args[2]).read()
+        else:
+            ddate = 'You are not using correctly!\n Just enter ddate or append day month year'
+        return ddate
+
 
     @botcmd
     def serverinfo( self, mess, args):
