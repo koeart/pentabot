@@ -12,6 +12,7 @@ import time
 import urllib
 import urllib2
 import sys
+import os
 
 # secret
 secretfile = ".pentabot.login"
@@ -54,7 +55,18 @@ class pentaBot(JabberBot):
             pass
         return "%s" % in_group
 
+    @botcmd
+    def fortune(self, mess, args):
+        '''Fortune Cookie for you
 
+        A Cookie you can trust and accept.
+        Just run fortune
+        '''
+        try:
+            fortune = os.popen('/usr/games/fortune').read()
+        except:
+            fortune = 'Your fortune unforseeable'
+        return ('Your Cookie reads:\n' + fortune)
 
     @botcmd
     def serverinfo( self, mess, args):
