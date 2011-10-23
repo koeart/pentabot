@@ -37,7 +37,7 @@ class pentaBot(JabberBot):
     For more info: http://github.com/koeart/pentabot
     koeart <at remove this> zwoelfelf <this as well> <net>
     """
-    @botcmd(hidden=true)
+    @botcmd
     def check_group( self, mess, args):
         '''
             Gibt Gruppenzugehörigkeit als Bool
@@ -49,7 +49,7 @@ class pentaBot(JabberBot):
         groups = self.conn.Roster.getGroups(args[0])
         if args[1] in groups:
             in_group = 1
-    return in_group
+        return in_group
     
 
 
