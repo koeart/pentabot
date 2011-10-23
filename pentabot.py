@@ -45,11 +45,11 @@ class pentaBot(JabberBot):
         Usage: check_group jid group
         """
         args = args.strip().split(' ')
-        in_group = 0
+        in_group = "0"
         jid = args[0]
         groups = self.conn.Roster.getGroups(jid)
         if args[1] in groups:
-            in_group = 1
+            in_group = "1"
         else:
             pass
         return "%s" % in_group
