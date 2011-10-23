@@ -11,6 +11,7 @@ import datetime
 import time
 import urllib
 import urllib2
+import sys
 
 # secret
 secretfile = ".pentabot.login"
@@ -39,19 +40,20 @@ class pentaBot(JabberBot):
     """
     @botcmd
     def check_group( self, mess, args):
-        '''
-            Gibt Gruppenzugehoerigkeit als Bool
-
-            Usage: check_group <jid> <group>
-        '''
+        """
+        Gibt Gruppenzugehoerigkeit als Bool
+        Usage: check_group jid group
+        """
         args = args.strip().split(' ')
         in_group = "0"
-        print args
         jid = args[0]
-        groups = self.conn.Roster.getGroups(args[0])
+        groups = self.conn.Roster.getGroups(jid)
         if args[1] in groups:
             in_group = "1"
-        return in_group
+        else:
+            pass
+        return "%s" % in_group
+
 
 
     @botcmd
@@ -135,6 +137,10 @@ class pentaBot(JabberBot):
 
     @botcmd
     def abfahrt( self, mess, args):
+        """
+        Abfahrtsmonitor
+        Benutze: abfahrt <Haltestellenname>
+        """
         args = args.strip().split(' ')
         if len(args) < 1:
             abfahrt = "Benutze: abfahrt <Haltestellenname>"
@@ -170,6 +176,9 @@ class pentaBot(JabberBot):
 
     @botcmd
     def join_chan( self, chan, name="PentaBot"):
+        """
+        funktioniert nicht
+        """
         self.join_room(chan, name)
 
     @botcmd
@@ -206,5 +215,5 @@ if __name__ == "__main__":
     #start Server
     while True:
         pentabot = pentaBot(secret.get('pentaBotSecret', 'username'), secret.get('pentaBotSecret', 'password'), secret.get('pentaBotSecret', 'resource'), bool(secret.get('pentaBotSecret', 'debug')))
-        pentabot.join_room(config.get("muc", "chan"), config.get("muc", "name"))
+        #pentabot.join_room(config.get("muc", "chan"), config.get("muc", "name"))
         pentabot.serve_forever()
