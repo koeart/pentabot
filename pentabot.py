@@ -64,7 +64,7 @@ class pentaBot(JabberBot):
         '''
         try:
             fortune = os.popen('/usr/games/fortune').read()
-        execept:
+        except:
             fortune = 'Your fortune unforseeable'
         return ('Your Cookie reads:\n' + fortune)
 
