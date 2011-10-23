@@ -40,7 +40,7 @@ class pentaBot(JabberBot):
     @botcmd
     def check_group( self, mess, args):
         '''
-            Gibt Gruppenzugehörigkeit als Bool
+            Gibt Gruppenzugehoerigkeit als Bool
 
             Usage: check_group <jid> <group>
         '''
