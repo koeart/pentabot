@@ -38,7 +38,7 @@ class pentaBot(JabberBot):
     koeart <at remove this> zwoelfelf <this as well> <net>
     """
     @botcmd
-    def check_group( self, mess, args):
+    def check_ingroup( self, mess, args):
         '''
             Gibt Gruppenzugehörigkeit als Bool
 
