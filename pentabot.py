@@ -44,6 +44,7 @@ class pentaBot(JabberBot):
 
             Usage: check_group <jid> <group>
         '''
+        args = args.strip().split(' ')
         in_group = 0
         jid = args[0]
         groups = self.conn.Roster.getGroups(args[0])
