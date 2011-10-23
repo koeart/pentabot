@@ -50,7 +50,7 @@ class pentaBot(JabberBot):
         groups = self.conn.Roster.getGroups(args[0])
         if args[1] in groups:
             in_group = 1
-        return in_group
+        return "%s" % in_group
     
 
 
