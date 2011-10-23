@@ -124,7 +124,7 @@ class pentaBot(JabberBot):
         else:
             abfahrt = ""
             if len(args) == 1:
-                laufzeit = config.get("bot", "laufzeit")
+                laufzeit = config.get("abfahrt", "laufzeit")
             else:
                 laufzeit = args[-1]
             values = {"ort": "Dresden",
@@ -133,7 +133,7 @@ class pentaBot(JabberBot):
                       "timestamp": int(time.time())}
 
             url_values = urllib.urlencode(values)
-            full_url = config.get("bot", "abfahrt_url") + "?" + url_values
+            full_url = config.get("abfahrt", "url") + "?" + url_values
 
             data = urllib2.urlopen(full_url)
             dare = data.read()
