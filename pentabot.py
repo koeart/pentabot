@@ -11,6 +11,7 @@ import datetime
 import time
 import urllib
 import urllib2
+import sys
 
 # secret
 secretfile = ".pentabot.login"
@@ -39,8 +40,10 @@ class pentaBot(JabberBot):
     """
     @botcmd
     def check_group( self, mess, args):
-        """Gibt Gruppenzugehoerigkeit als Bool
-           Usage: check_group jid group"""
+        """
+        Gibt Gruppenzugehoerigkeit als Bool
+        Usage: check_group jid group
+        """
         args = args.strip().split(' ')
         in_group = 0
         jid = args[0]
@@ -134,6 +137,10 @@ class pentaBot(JabberBot):
 
     @botcmd
     def abfahrt( self, mess, args):
+        """
+        Abfahrtsmonitor
+        Benutze: abfahrt <Haltestellenname>
+        """
         args = args.strip().split(' ')
         if len(args) < 1:
             abfahrt = "Benutze: abfahrt <Haltestellenname>"
@@ -169,6 +176,9 @@ class pentaBot(JabberBot):
 
     @botcmd
     def join_chan( self, chan, name="PentaBot"):
+        """
+        funktioniert nicht
+        """
         self.join_room(chan, name)
 
     @botcmd
