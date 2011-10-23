@@ -39,15 +39,14 @@ class pentaBot(JabberBot):
     """
     @botcmd
     def check_group( self, mess, args):
-        '''
-            Gibt Gruppenzugehoerigkeit als Bool
+       """ Gibt Gruppenzugehoerigkeit als Bool
 
             Usage: check_group <jid> <group>
-        '''
+        """
         args = args.strip().split(' ')
         in_group = 0
         jid = args[0]
-        groups = self.conn.Roster.getGroups(args[0])
+        groups = self.conn.Roster.getGroups(jid)
         if args[1] in groups:
             in_group = 1
         return "%s" % in_group
