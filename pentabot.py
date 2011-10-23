@@ -82,9 +82,6 @@ class pentaBot(JabberBot):
             except:
                 group = "\n"
             if args[0] == "add":
-                if config.get("bot", "admin_group") not in groups
-                    group += "Du darfst das nicht!"
-                    return group
                 try:
                     groups.append(", ".join(args[2:]))
                     self.conn.Roster.setItem(args[1], None, groups)
@@ -92,9 +89,6 @@ class pentaBot(JabberBot):
                 except:
                     group += "Beim gruppen erweitern trat ein Fehler auf!"
             elif args[0] == "del":
-                if  config.get("bot", "admin_group") not in groups:
-                    group += "Du darfst das nicht!"
-                    return group
                 if args[2] == "all":
                     try:
                         self.conn.Roster.setItem(args[1], None, [])
@@ -188,5 +182,5 @@ if __name__ == "__main__":
     #start Server
     while True:
         pentabot = pentaBot(secret.get('pentaBotConf', 'username'), secret.get('pentaBotConf', 'password'), secret.get('pentaBotConf', 'resource'), bool(secret.get('pentaBotConf', 'debug')))
-        pentabot.join_room("c3d2@muc.hq.c3d2.de", "PentaBot")
+        #pentabot.join_room("c3d2@muc.hq.c3d2.de", "PentaBot")
         pentabot.serve_forever()
