@@ -149,6 +149,9 @@ class pentaBot(JabberBot):
 
         return abfahrt
 
+    @botcmd
+    def join_chan( self, chan, name="PentaBot"):
+        self.join_room(chan, name)
 
     @botcmd
     def helloworld( self, mess, args):
