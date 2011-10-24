@@ -122,7 +122,7 @@ class pentaBot(JabberBot):
         args = args.strip().split(' ')
         if len(args) <= 1:
             
-            exsiting = []
+            exsisting = []
             for x in self.conn.Roster.getItems:
                 exsisting.append(self.conn.Roster.getGroups(x))
             exsisting_groups = ", ".join(exsisting)
