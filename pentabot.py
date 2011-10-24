@@ -122,11 +122,7 @@ class pentaBot(JabberBot):
         args = args.strip().split(' ')
         if len(args) <= 1:
             
-            exsisting = []
-            for x in self.conn.Roster.getItems:
-                exsisting.append(self.conn.Roster.getGroups(x))
-            exsisting_groups = ", ".join(exsisting)
-            group = "Bitte rufe \"help group\" fuer moegliche Optionen auf!\nbestehende Gruppen sind:" + exsisting_groups
+            group = "Bitte rufe \"help group\" fuer moegliche Optionen auf!"
         else:
             try:
                 groups = self.conn.Roster.getGroups(args[1])
@@ -158,11 +154,19 @@ class pentaBot(JabberBot):
                     else:
                         group += "%s ist nicht in %s" % (args[1], args[2])
             elif args[0] == "list":
-                list_group = ", ".join(groups)
-                if not list_group:
-                    group += "%s ist in keiner Gruppe" % args[1]
-                else:
-                    group += "%s ist in de{n,r} Gruppe(n) %s " % (args[1], list_group)
+                if args [1] == "exsisting":
+                    exsisting = []
+                    for x in self.conn.Roster.getItems:
+                        exsisting.append(self.conn.Roster.getGroups(x))
+                    exsisting_groups = ", ".join(exsisting)
+                    
+                    group = "Die bisher exsistierenden Gruppen sind: " + exsisting_groups
+                else:    
+	                list_group = ", ".join(groups)
+	                if not list_group:
+	                    group += "%s ist in keiner Gruppe" % args[1]
+	                else:
+	                    group += "%s ist in de{n,r} Gruppe(n) %s " % (args[1], list_group)        
             else:
                 group += "Befehl '%s' nicht gefunden!\n" % args[0]
                 group += "Bitte rufe 'help group' fuer moegliche Optionen auf!"
