@@ -121,7 +121,12 @@ class pentaBot(JabberBot):
         """
         args = args.strip().split(' ')
         if len(args) <= 1:
-            group = 'Bitte rufe \"help group\" fuer moegliche Optionen auf!'
+            
+            exisiting = []
+            for x in self.conn.Roster.getItems:
+                exsisting.append(self.conn.Roster.getGroups(x))
+            exsisting_groups = ", ".join(exsisting)
+            group = "Bitte rufe \"help group\" fuer moegliche Optionen auf!\nbestehende Gruppen sind:" + exsisting_groups
         else:
             try:
                 groups = self.conn.Roster.getGroups(args[1])
