@@ -13,6 +13,7 @@ import urllib
 import urllib2
 import sys
 import os
+import pywapi
 
 # secret
 secretfile = ".pentabot.login"
@@ -39,6 +40,15 @@ class pentaBot(JabberBot):
     For more info: http://github.com/koeart/pentabot
     koeart <at remove this> zwoelfelf <this as well> <net>
     """
+    
+    @botcmd
+    def weather( self, mess, args):
+        """
+        Gibt den Wetterbericht für DD zurück
+        """
+        result = pywapi.get_weather_from_google(weather=dresden,germany)
+        return "Google says: It is " + string.lower(result['current_conditions']['condition']) + " and " + result['current_conditions']['temp_c'] + "C now Dresden.\n\n"
+    
     @botcmd
     def check_group( self, mess, args):
         """

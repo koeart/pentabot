@@ -4,6 +4,7 @@ Requirements:
 
 python-jabberbot (requires python-xmpp)
 python-feedparser
+python-pywapi
 
 a stylish xmpp-based bot serving pentamedia with your data and pentamedia data for you.
 
