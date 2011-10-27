@@ -122,13 +122,9 @@ class pentaBot(JabberBot):
         """
         Gibt eine liste der Gruppen wieder
         """
-        print "mih"
-        print jid
         try:
-            print "muh"
             return self.conn.Roster.getGroups(jid)
         except:
-            print "mah"
             return False
 
     @botcmd
