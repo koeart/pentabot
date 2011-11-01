@@ -34,6 +34,11 @@ def format_help(fun):
     fun.__doc__ = fun.__doc__.format(**feed_help) #** dict entpacken, * listen entpacken 
     return fun
 
+def test(fun):
+        def wrapper(self, mess, args):
+            fun(self,mess,args)
+        return wrapper
+
 
 class pentaBot(JabberBot):
     """
@@ -41,6 +46,11 @@ class pentaBot(JabberBot):
     For more info: http://github.com/koeart/pentabot
     koeart <at remove this> zwoelfelf <this as well> <net>
     """
+
+    @test
+#    @botcmd(hidden=True)
+    def testen(self,mess,args):
+        return args
 
     @botcmd
     def fortune(self, mess, args):
