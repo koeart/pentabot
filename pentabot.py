@@ -205,6 +205,15 @@ class pentaBot(JabberBot):
                 group += "Bitte rufe 'help group' fuer moegliche Optionen auf!"
         return group
 
+    def _groupAdd(self, args):
+        pass
+
+    def _groupDel(self, args):
+        pass
+
+    def _groupList(self, args):
+        pass
+
     @botcmd
     def abfahrt( self, mess, args):
         """
