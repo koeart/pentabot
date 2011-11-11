@@ -272,9 +272,13 @@ class pentaBot(JabberBot):
         args = args.strip().split(' ')
         if args[0] in dict(config.items('RSS')).keys():
             message = "\n"
+            rounds = 0
             if len(args) == 1:
                 args.append('1')
             for loop in range(int(args[1])):
+                rounds += 1
+                if rounds == int(config.get('RSS', "maxfeeds")):
+                    break
                 f = feedparser.parse(config.get('RSS', args[0])).get('entries')[loop]
                 message += 'Titel: ' + f.get('title') + '\n' + 'URL: ' + f.get('link') + '\n'
         else:
