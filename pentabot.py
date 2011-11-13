@@ -124,7 +124,7 @@ class pentaBot(JabberBot):
             roster = "Please PM!"
         return roster
 
-    def _check_group( self, jid, group):
+    def _checkGroup( self, jid, group):
         """
         Gibt Gruppenzugehoerigkeit als Bool
         """
@@ -133,7 +133,7 @@ class pentaBot(JabberBot):
         else:
             return False
 
-    def _list_group( self, jid):
+    def _listGroup( self, jid):
         """
         Gibt eine liste der Gruppen wieder
         """
@@ -153,15 +153,15 @@ class pentaBot(JabberBot):
             group = "Bitte rufe \"help group\" fuer moegliche Optionen auf!"
         else:
             group = "\n"
-            if self._list_group(args[1]):
-                groups = self._list_group(args[1])
+            if self._listGroup(args[1]):
+                groups = self._listGroup(args[1])
 
-            if args[0] == "add" and self._check_group(mess.getFrom().getStripped(), config.get("group", "admin")):
-                group += _groupAdd(groups, args)
-            elif args[0] == "del" and _check_group(mess.getFrom().getStripped(), config.get("group", "admin")):
-                group += _groupDel(groups, args)
+            if args[0] == "add" and self._checkGroup(mess.getFrom().getStripped(), config.get("group", "admin")):
+                group += self._groupAdd(groups, args)
+            elif args[0] == "del" and _checkGroup(mess.getFrom().getStripped(), config.get("group", "admin")):
+                group += self._groupDel(groups, args)
             elif args[0] == "list":
-                group += _groupList(mess, groups, args)
+                group += self._groupList(mess, groups, args)
             else:
                 group += "Befehl '%s' nicht gefunden!\n" % args[0]
                 group += "Bitte rufe 'help group' fuer moegliche Optionen auf!"
@@ -196,7 +196,7 @@ class pentaBot(JabberBot):
         return _groupDel
 
     def _groupList(self, mess, groups, args):
-        if args [1] == "existing" and  self._check_group(mess.getFrom().getStripped(), config.get("group", "admin")):
+        if args [1] == "existing" and  self._checkGroup(mess.getFrom().getStripped(), config.get("group", "admin")):
             existing = []
             for x in self.conn.Roster.getItems():
                 if self.conn.Roster.getGroups(x):
