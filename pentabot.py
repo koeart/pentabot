@@ -159,22 +159,7 @@ class pentaBot(JabberBot):
             if args[0] == "add" and self._check_group(mess.getFrom().getStripped(), config.get("group", "admin")):
                 group += _groupAdd(groups, args)
             elif args[0] == "del" and _check_group(mess.getFrom().getStripped(), config.get("group", "admin")):
-                if args[2] == "all":
-                    try:
-                        self.conn.Roster.setItem(args[1], None, [])
-                        group += "Loesche %s von %s" % (args[1], ", ".join(groups))
-                    except:
-                        group += "Beim Loeschen von %s aus %s trat ein Fehler auf!" % (args[1], args[2])
-                else:
-                    if args[2] in groups:
-                        groups.remove(args[2])
-                        try:
-                            self.conn.Roster.setItem(args[1], None, groups)
-                            group += "Loesche %s von %s" % (args[1], args[2])
-                        except:
-                            group += "Beim Loeschen von %s aus %s trat ein Fehler auf!" % (args[1], args[2])
-                    else:
-                        group += "%s ist nicht in %s" % (args[1], args[2])
+                group += _groupDel(groups, args)
             elif args[0] == "list":
                 if args [1] == "existing" and  self._check_group(mess.getFrom().getStripped(), config.get("group", "admin")):
                     existing = []
@@ -214,8 +199,24 @@ class pentaBot(JabberBot):
             _groupAdd = "Beim gruppen erweitern trat ein Fehler auf!"
         return _groupAdd
 
-    def _groupDel(self, args):
-        pass
+    def _groupDel(self, groups, args):
+        if args[2] == "all":
+            try:
+                self.conn.Roster.setItem(args[1], None, [])
+                _groupDel = "Loesche %s von %s" % (args[1], ", ".join(groups))
+            except:
+                _groupDel = "Beim Loeschen von %s aus %s trat ein Fehler auf!" % (args[1], args[2])
+        else:
+            if args[2] in groups:
+                groups.remove(args[2])
+                try:
+                    self.conn.Roster.setItem(args[1], None, groups)
+                    _groupDel = "Loesche %s von %s" % (args[1], args[2])
+                except:
+                    _groupDel = "Beim Loeschen von %s aus %s trat ein Fehler auf!" % (args[1], args[2])
+            else:
+                _groupDel = "%s ist nicht in %s" % (args[1], args[2])
+        return _groupDel
 
     def _groupList(self, args):
         pass
