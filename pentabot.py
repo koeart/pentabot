@@ -157,12 +157,7 @@ class pentaBot(JabberBot):
                 groups = self._list_group(args[1])
 
             if args[0] == "add" and self._check_group(mess.getFrom().getStripped(), config.get("group", "admin")):
-                try:
-                    groups.append(", ".join(args[2:]))
-                    self.conn.Roster.setItem(args[1], None, groups)
-                    group += "Fuege %s zu %s" % (args[1], ", ".join(groups))
-                except:
-                    group += "Beim gruppen erweitern trat ein Fehler auf!"
+                group += _groupAdd(groups, args)
             elif args[0] == "del" and _check_group(mess.getFrom().getStripped(), config.get("group", "admin")):
                 if args[2] == "all":
                     try:
@@ -210,8 +205,14 @@ class pentaBot(JabberBot):
                 group += "Bitte rufe 'help group' fuer moegliche Optionen auf!"
         return group
 
-    def _groupAdd(self, args):
-        pass
+    def _groupAdd(self, groups, args):
+        try:
+            groups.append(", ".join(args[2:]))
+            self.conn.Roster.setItem(args[1], None, groups)
+            _groupAdd = "Fuege %s zu %s" % (args[1], ", ".join(groups))
+        except:
+            _groupAdd = "Beim gruppen erweitern trat ein Fehler auf!"
+        return _groupAdd
 
     def _groupDel(self, args):
         pass
