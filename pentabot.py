@@ -161,30 +161,7 @@ class pentaBot(JabberBot):
             elif args[0] == "del" and _check_group(mess.getFrom().getStripped(), config.get("group", "admin")):
                 group += _groupDel(groups, args)
             elif args[0] == "list":
-                if args [1] == "existing" and  self._check_group(mess.getFrom().getStripped(), config.get("group", "admin")):
-                    existing = []
-                    for x in self.conn.Roster.getItems():
-                        if self.conn.Roster.getGroups(x):
-                            if type(self.conn.Roster.getGroups(x)) is ListType:
-                                for y in self.conn.Roster.getGroups(x):
-                                    existing.append(y)
-                            else:
-                                existing.append(self.conn.Roster.getGroups(x))
-                    ab = {}
-                    for z in existing:
-                        ab[z] = ''
-                    existing = ab.keys()
-                    existing.sort()
-                    group += "Die bisher existierenden Gruppen sind: %s" % ", ".join(existing)
-                else:
-                    if groups:
-                        list_group = ", ".join(groups)
-                        if not list_group:
-                            group += "%s ist in keiner Gruppe" % args[1]
-                        else:
-                            group += "%s ist in de{n,r} Gruppe(n) %s " % (args[1], list_group)
-                    else:
-                        group += "Bitte rufe 'help group' fuer moegliche Optionen auf!"
+                group += _groupList(mess, groups, args)
             else:
                 group += "Befehl '%s' nicht gefunden!\n" % args[0]
                 group += "Bitte rufe 'help group' fuer moegliche Optionen auf!"
@@ -218,8 +195,32 @@ class pentaBot(JabberBot):
                 _groupDel = "%s ist nicht in %s" % (args[1], args[2])
         return _groupDel
 
-    def _groupList(self, args):
-        pass
+    def _groupList(self, mess, groups, args):
+        if args [1] == "existing" and  self._check_group(mess.getFrom().getStripped(), config.get("group", "admin")):
+            existing = []
+            for x in self.conn.Roster.getItems():
+                if self.conn.Roster.getGroups(x):
+                    if type(self.conn.Roster.getGroups(x)) is ListType:
+                        for y in self.conn.Roster.getGroups(x):
+                            existing.append(y)
+                    else:
+                        existing.append(self.conn.Roster.getGroups(x))
+            ab = {}
+            for z in existing:
+                ab[z] = ''
+            existing = ab.keys()
+            existing.sort()
+            _groupList = "Die bisher existierenden Gruppen sind: %s" % ", ".join(existing)
+        else:
+            if groups:
+                list_group = ", ".join(groups)
+                if not list_group:
+                    _groupList = "%s ist in keiner Gruppe" % args[1]
+                else:
+                    _groupList = "%s ist in de{n,r} Gruppe(n) %s " % (args[1], list_group)
+            else:
+                _groupList = "Bitte rufe 'help group' fuer moegliche Optionen auf!"
+        return _groupList
 
     @botcmd
     def abfahrt( self, mess, args):
