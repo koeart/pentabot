@@ -47,6 +47,79 @@ class pentaBot(JabberBot):
     koeart <at remove this> zwoelfelf <this as well> <net>
     """
 
+    def _checkGroup( self, jid, group):
+        """
+        Gibt Gruppenzugehoerigkeit als Bool
+        """
+        if group in self.conn.Roster.getGroups(jid):
+            return True
+        else:
+            return False
+
+    def _listGroup( self, jid):
+        """
+        Gibt eine liste der Gruppen wieder
+        """
+        try:
+            return self.conn.Roster.getGroups(jid)
+        except:
+            return None
+
+    def _groupList(self, mess, groups, args):
+        if args [1] == "existing" and  self._checkGroup(mess.getFrom().getStripped(), config.get("group", "admin")):
+            existing = []
+            for x in self.conn.Roster.getItems():
+                if self.conn.Roster.getGroups(x):
+                    if type(self.conn.Roster.getGroups(x)) is ListType:
+                        for y in self.conn.Roster.getGroups(x):
+                            existing.append(y)
+                    else:
+                        existing.append(self.conn.Roster.getGroups(x))
+            ab = {}
+            for z in existing:
+                ab[z] = ''
+            existing = ab.keys()
+            existing.sort()
+            _groupList = "Die bisher existierenden Gruppen sind: %s" % ", ".join(existing)
+        else:
+            if groups:
+                list_group = ", ".join(groups)
+                if not list_group:
+                    _groupList = "%s ist in keiner Gruppe" % args[1]
+                else:
+                    _groupList = "%s ist in de{n,r} Gruppe(n) %s " % (args[1], list_group)
+            else:
+                _groupList = "Bitte rufe 'help group' fuer moegliche Optionen auf!"
+        return _groupList
+
+    def _groupAdd(self, groups, args):
+        try:
+            groups.append(", ".join(args[2:]))
+            self.conn.Roster.setItem(args[1], None, groups)
+            _groupAdd = "Fuege %s zu %s" % (args[1], ", ".join(groups))
+        except:
+            _groupAdd = "Beim gruppen erweitern trat ein Fehler auf!"
+        return _groupAdd
+
+    def _groupDel(self, groups, args):
+        if args[2] == "all":
+            try:
+                self.conn.Roster.setItem(args[1], None, [])
+                _groupDel = "Loesche %s von %s" % (args[1], ", ".join(groups))
+            except:
+                _groupDel = "Beim Loeschen von %s aus %s trat ein Fehler auf!" % (args[1], args[2])
+        else:
+            if args[2] in groups:
+                groups.remove(args[2])
+                try:
+                    self.conn.Roster.setItem(args[1], None, groups)
+                    _groupDel = "Loesche %s von %s" % (args[1], args[2])
+                except:
+                    _groupDel = "Beim Loeschen von %s aus %s trat ein Fehler auf!" % (args[1], args[2])
+            else:
+                _groupDel = "%s ist nicht in %s" % (args[1], args[2])
+        return _groupDel
+
     @test
 #    @botcmd(hidden=True)
     def testen(self,mess,args):
@@ -110,12 +183,12 @@ class pentaBot(JabberBot):
     @botcmd
     def roster( self, mess, args):
         """Wiedergabe der aktuellen Roster"""
-        if self._check_group(mess.getFrom().getStripped(), config.get("group", "admin")):
+        if self._checkGroup(mess.getFrom().getStripped(), config.get("group", "admin")):
             roster = ", ".join(self.conn.Roster.getItems())
         elif mess.getFrom().getStripped() != config.get("muc", "chan"):
             if mess.getFrom().getStripped() in self.conn.Roster.getItems():
-                if self._list_group(mess.getFrom().getStripped()):
-                    roster = "Hallo %s, du bist in" % mess.getFrom().getStripped(), self._list_group(mess.getFrom().getStripped())
+                if self._listGroup(mess.getFrom().getStripped()):
+                    roster = "Hallo %s, du bist in" % mess.getFrom().getStripped(), self._listGroup(mess.getFrom().getStripped())
                 else:
                     roster = "Hallo %s, du bist noch in keiner Gruppe" % mess.getFrom().getStripped()
             else:
@@ -123,24 +196,6 @@ class pentaBot(JabberBot):
         else:
             roster = "Please PM!"
         return roster
-
-    def _checkGroup( self, jid, group):
-        """
-        Gibt Gruppenzugehoerigkeit als Bool
-        """
-        if group in self.conn.Roster.getGroups(jid):
-            return True
-        else:
-            return False
-
-    def _listGroup( self, jid):
-        """
-        Gibt eine liste der Gruppen wieder
-        """
-        try:
-            return self.conn.Roster.getGroups(jid)
-        except:
-            return None
 
     @botcmd
     def group( self, mess, args):
@@ -166,61 +221,6 @@ class pentaBot(JabberBot):
                 group += "Befehl '%s' nicht gefunden!\n" % args[0]
                 group += "Bitte rufe 'help group' fuer moegliche Optionen auf!"
         return group
-
-    def _groupAdd(self, groups, args):
-        try:
-            groups.append(", ".join(args[2:]))
-            self.conn.Roster.setItem(args[1], None, groups)
-            _groupAdd = "Fuege %s zu %s" % (args[1], ", ".join(groups))
-        except:
-            _groupAdd = "Beim gruppen erweitern trat ein Fehler auf!"
-        return _groupAdd
-
-    def _groupDel(self, groups, args):
-        if args[2] == "all":
-            try:
-                self.conn.Roster.setItem(args[1], None, [])
-                _groupDel = "Loesche %s von %s" % (args[1], ", ".join(groups))
-            except:
-                _groupDel = "Beim Loeschen von %s aus %s trat ein Fehler auf!" % (args[1], args[2])
-        else:
-            if args[2] in groups:
-                groups.remove(args[2])
-                try:
-                    self.conn.Roster.setItem(args[1], None, groups)
-                    _groupDel = "Loesche %s von %s" % (args[1], args[2])
-                except:
-                    _groupDel = "Beim Loeschen von %s aus %s trat ein Fehler auf!" % (args[1], args[2])
-            else:
-                _groupDel = "%s ist nicht in %s" % (args[1], args[2])
-        return _groupDel
-
-    def _groupList(self, mess, groups, args):
-        if args [1] == "existing" and  self._checkGroup(mess.getFrom().getStripped(), config.get("group", "admin")):
-            existing = []
-            for x in self.conn.Roster.getItems():
-                if self.conn.Roster.getGroups(x):
-                    if type(self.conn.Roster.getGroups(x)) is ListType:
-                        for y in self.conn.Roster.getGroups(x):
-                            existing.append(y)
-                    else:
-                        existing.append(self.conn.Roster.getGroups(x))
-            ab = {}
-            for z in existing:
-                ab[z] = ''
-            existing = ab.keys()
-            existing.sort()
-            _groupList = "Die bisher existierenden Gruppen sind: %s" % ", ".join(existing)
-        else:
-            if groups:
-                list_group = ", ".join(groups)
-                if not list_group:
-                    _groupList = "%s ist in keiner Gruppe" % args[1]
-                else:
-                    _groupList = "%s ist in de{n,r} Gruppe(n) %s " % (args[1], list_group)
-            else:
-                _groupList = "Bitte rufe 'help group' fuer moegliche Optionen auf!"
-        return _groupList
 
     @botcmd
     def abfahrt( self, mess, args):
@@ -260,13 +260,6 @@ class pentaBot(JabberBot):
                 abfahrt += "%6s %-19s %7s\n" % (outp[0], outp[1], outp[2])
 
         return abfahrt
-
-    @botcmd
-    def join_chan( self, chan, name="PentaBot"):
-        """
-        funktioniert nicht
-        """
-        self.join_room(chan, name)
 
     @botcmd
     def helloworld( self, mess, args):
