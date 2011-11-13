@@ -102,14 +102,17 @@ class pentaBot(JabberBot):
     @botcmd
     def whoami( self, mess, args):
         """Zeigt dir dein Username"""
-        return mess.getFrom().getStripped()
+        if mess.getType() == "groupchat":
+            return str(mess.getFrom()).split("/")[1]
+        else:
+            return mess.getFrom().getStripped()
 
     @botcmd
     def roster( self, mess, args):
         """Wiedergabe der aktuellen Roster"""
         if self._check_group(mess.getFrom().getStripped(), config.get("group", "admin")):
             roster = ", ".join(self.conn.Roster.getItems())
-        else:
+        elif mess.getFrom().getStripped() != config.get("muc", "chan"):
             if mess.getFrom().getStripped() in self.conn.Roster.getItems():
                 if self._list_group(mess.getFrom().getStripped()):
                     roster = "Hallo %s, du bist in" % mess.getFrom().getStripped(), self._list_group(mess.getFrom().getStripped())
@@ -117,6 +120,8 @@ class pentaBot(JabberBot):
                     roster = "Hallo %s, du bist noch in keiner Gruppe" % mess.getFrom().getStripped()
             else:
                 roster = "Hallo %s, ich kenn dich noch nicht!" % mess.getFrom().getStripped()
+        else:
+            roster = "Please PM!"
         return roster
 
     def _check_group( self, jid, group):
@@ -135,7 +140,7 @@ class pentaBot(JabberBot):
         try:
             return self.conn.Roster.getGroups(jid)
         except:
-            return False
+            return None
 
     @botcmd
     def group( self, mess, args):
@@ -298,5 +303,5 @@ if __name__ == "__main__":
     #start Server
     while True:
         pentabot = pentaBot(secret.get('pentaBotSecret', 'username'), secret.get('pentaBotSecret', 'password'), secret.get('pentaBotSecret', 'resource'), bool(secret.get('pentaBotSecret', 'debug')))
-        #pentabot.join_room(config.get("muc", "chan"), config.get("muc", "name"))
+        pentabot.join_room(config.get("muc", "chan"), config.get("muc", "name"))
         pentabot.serve_forever()
