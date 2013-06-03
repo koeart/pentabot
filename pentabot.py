@@ -389,5 +389,5 @@ if __name__ == "__main__":
     #start Server
     while True:
         pentabot = pentaBot(secret.get('pentaBotSecret', 'username'), secret.get('pentaBotSecret', 'password'), secret.get('pentaBotSecret', 'resource'), bool(secret.get('pentaBotSecret', 'debug')))
-        #pentabot.join_room(config.get("muc", "chan"), config.get("muc", "name"))
+        pentabot.join_room(config.get("muc", "chan"), config.get("muc", "name"))
         pentabot.serve_forever()
