@@ -358,7 +358,7 @@ class pentaBot(JabberBot):
         content = json.loads(data.content)
         #pprint.pprint(content)
     
-        s = u'Pegelstand: %d mm\n' % content.get('value')
+        s = u'Pegelstand: %d cm\n' % content.get('value')
         return s
 
 
