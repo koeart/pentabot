@@ -15,6 +15,8 @@ import urllib
 import urllib2
 import sys
 import os
+import json
+import requests
 
 # secret
 secretfile = ".pentabot.login"
@@ -29,6 +31,40 @@ config.read([configfile, configfile])
 # feed dict
 feed_help= {}
 feed_help['lastrss']= "\n".join(dict(config.items('RSS')).keys())
+
+#fridge
+fridge = {}
+message =""
+def open_fridge(product, action, amount):
+        if (not(fridge.has_key(product)) and action != "sub"):
+            fridge.update({product : 0})
+            add_product(product)
+        else:
+            if action == "show":
+                message = fridge.viewitems()
+            if action == "add":
+                for i in range(amount):
+                    add_product(product)
+            elif action == "sub":
+                for i in range(amount):
+                    sub_product(product)
+            else:
+                message = "Bitte sub oder add ein Produkt! Oder lass es dir mit show zeigen"
+        return message
+
+        def add_product(product):
+            fridge[product] += 1
+            message = "Produkt hinzugefuegt"
+            return message
+
+        def sub_product(product):
+            if fridge[product] >= 1:
+                fridge[product] -= 1
+                message = "Produkt rausgenommen"
+            else:
+                message = "Fridge leer!"
+            return message
+
 
 def format_help(fun):
     fun.__doc__ = fun.__doc__.format(**feed_help) #** dict entpacken, * listen entpacken 
@@ -51,6 +87,18 @@ class pentaBot(JabberBot):
 #    @botcmd(hidden=True)
     def testen(self,mess,args):
         return args
+
+    @botcmd
+    def fridge(self, mess, args):
+        """ Fridge
+            
+            open_fridge(product, action, amount)
+            action = add or sub or show
+        """
+        args = args.strip().split(' ')
+
+        open_fridge(args[0], args[1], args[2])
+        return message
 
     @botcmd
     def fortune(self, mess, args):
@@ -280,6 +328,26 @@ class pentaBot(JabberBot):
         else:
             message = 'Bitte rufe \"help last\" fuer moegliche Optionen auf!'
         return message
+        
+    @botcmd
+    def elbe():
+    
+        url = 'http://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/DRESDEN/W/currentmeasurement.json'
+        params = dict(
+            includeTimeseries='false',
+            includeCurrentMeasurement='true',
+            waters='ELBE'
+            )
+        
+        data = requests.get(url=url)
+    
+    
+        content = json.loads(data.content)
+        #pprint.pprint(content)
+    
+        s = u'Pegelstand: %d mm\n' % content.get('value')
+        return s
+
 
 if __name__ == "__main__":
     #start Server
