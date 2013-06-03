@@ -32,6 +32,8 @@ config.read([configfile, configfile])
 feed_help= {}
 feed_help['lastrss']= "\n".join(dict(config.items('RSS')).keys())
 
+elbabsaufer = dict()
+
 #fridge
 fridge = {}
 message =""
@@ -343,7 +345,10 @@ class pentaBot(JabberBot):
         return message
         
     @botcmd
-    def elbe():
+    def elbe(self, mess, args):
+        '''
+        aktueller elbpegel
+        '''
     
         url = 'http://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/DRESDEN/W/currentmeasurement.json'
         params = dict(
@@ -351,15 +356,28 @@ class pentaBot(JabberBot):
             includeCurrentMeasurement='true',
             waters='ELBE'
             )
-        
+        elbabsaufer = dict()
         data = requests.get(url=url)
+        
+        args = args.strip().split(' ')
+        print "" + args[0] + ", "+ args[1]
+            
+            
+        if (elbabsaufer.has_key(args[1])):
+            elbabsaufer[args[0]] = args[1]
+            message = "%s wird bei %s absaufen\n" % args[0], args[1]
+        else:
+            message = "%s saeuft bei %s ab!\n" % args[0], elbabsaufer[args[0]]
+                
     
-    
+        
         content = json.loads(data.content)
         #pprint.pprint(content)
-    
-        s = u'Pegelstand: %d mm\n' % content.get('value')
-        return s
+        pegel = content.get('value')
+
+        message += 'Pegelstand: %d mm\n' % pegel
+        
+        return message
 
 
 if __name__ == "__main__":
