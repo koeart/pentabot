@@ -356,20 +356,23 @@ class pentaBot(JabberBot):
             includeCurrentMeasurement='true',
             waters='ELBE'
             )
-        elbabsaufer = dict()
+        #elbabsaufer = dict()
         data = requests.get(url=url)
         
-        args = args.strip().split(' ')
-        print "" + args[0] + ", "+ args[1]
-            
-            
-        if (elbabsaufer.has_key(args[1])):
-            elbabsaufer[args[0]] = args[1]
-            message = "%s wird bei %s absaufen\n" % args[0], args[1]
-        else:
-            message = "%s saeuft bei %s ab!\n" % args[0], elbabsaufer[args[0]]
-                
-    
+
+#        try:
+#            args = args.strip().split(' ')
+#            print "" + args[0] + ", "+ args[1]
+#        except:
+#            message = "fehler\n"
+#        if (len(args)!=0):
+#            if (elbabsaufer.has_key(args[1])):
+#                elbabsaufer[args[0]] = args[1]
+#                message = "%s wird bei %s absaufen\n" % args[0], args[1]
+#            else:
+#                message = "%s saeuft bei %s ab!\n" % args[0], elbabsaufer[args[0]]
+#                    
+#    
         
         content = json.loads(data.content)
         #pprint.pprint(content)
