@@ -198,7 +198,7 @@ class pentaBot(JabberBot):
         if len(args) <= 1 :
             ddate += os.popen('/usr/bin/ddate').read()
         elif len(args) == 3:
-            ddate += os.popen('/usr/bin/ddate '+args[0]+' '+ args[1]+' '+ args[2]).read()
+            ddate += os.popen('/usr/bin/ddate '+str(int(args[0]))+' '+ str(int(args[1]))+' '+ str(int(args[2]))).read()
         else:
             ddate = 'You are not using correctly!\n Just enter ddate or append day month year'
         return ddate
