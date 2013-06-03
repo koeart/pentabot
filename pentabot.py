@@ -349,7 +349,7 @@ class pentaBot(JabberBot):
         '''
         aktueller elbpegel
         '''
-    
+        message = ""
         url = 'http://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/DRESDEN/W/currentmeasurement.json'
         params = dict(
             includeTimeseries='false',
@@ -373,11 +373,13 @@ class pentaBot(JabberBot):
         
         content = json.loads(data.content)
         #pprint.pprint(content)
+
         pegel = content.get('value')
 
-        message += 'Pegelstand: %d mm\n' % pegel
+        message += 'Pegelstand: %d cm\n' % pegel
         
         return message
+
 
 
 if __name__ == "__main__":
