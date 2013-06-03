@@ -15,6 +15,8 @@ import urllib
 import urllib2
 import sys
 import os
+import json
+import requests
 
 # secret
 secretfile = ".pentabot.login"
@@ -29,6 +31,42 @@ config.read([configfile, configfile])
 # feed dict
 feed_help= {}
 feed_help['lastrss']= "\n".join(dict(config.items('RSS')).keys())
+
+elbabsaufer = dict()
+
+#fridge
+fridge = {}
+message =""
+def open_fridge(product, action, amount):
+        if (not(fridge.has_key(product)) and action != "sub"):
+            fridge.update({product : 0})
+            add_product(product)
+        else:
+            if action == "show":
+                message = fridge.viewitems()
+            if action == "add":
+                for i in range(amount):
+                    add_product(product)
+            elif action == "sub":
+                for i in range(amount):
+                    sub_product(product)
+            else:
+                message = "Bitte sub oder add ein Produkt! Oder lass es dir mit show zeigen"
+        return message
+
+        def add_product(product):
+            fridge[product] += 1
+            message = "Produkt hinzugefuegt"
+            return message
+
+        def sub_product(product):
+            if fridge[product] >= 1:
+                fridge[product] -= 1
+                message = "Produkt rausgenommen"
+            else:
+                message = "Fridge leer!"
+            return message
+
 
 def format_help(fun):
     fun.__doc__ = fun.__doc__.format(**feed_help) #** dict entpacken, * listen entpacken 
@@ -124,6 +162,18 @@ class pentaBot(JabberBot):
 #    @botcmd(hidden=True)
     def testen(self,mess,args):
         return args
+
+    @botcmd
+    def fridge(self, mess, args):
+        """ Fridge
+            
+            open_fridge(product, action, amount)
+            action = add or sub or show
+        """
+        args = args.strip().split(' ')
+
+        open_fridge(args[0], args[1], args[2])
+        return message
 
     @botcmd
     def fortune(self, mess, args):
@@ -293,10 +343,51 @@ class pentaBot(JabberBot):
         else:
             message = 'Bitte rufe \"help last\" fuer moegliche Optionen auf!'
         return message
+        
+    @botcmd
+    def elbe(self, mess, args):
+        '''
+        aktueller elbpegel
+        '''
+        message = ""
+        url = 'http://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/DRESDEN/W/currentmeasurement.json'
+        params = dict(
+            includeTimeseries='false',
+            includeCurrentMeasurement='true',
+            waters='ELBE'
+            )
+        #elbabsaufer = dict()
+        data = requests.get(url=url)
+        
+
+#        try:
+#            args = args.strip().split(' ')
+#            print "" + args[0] + ", "+ args[1]
+#        except:
+#            message = "fehler\n"
+#        if (len(args)!=0):
+#            if (elbabsaufer.has_key(args[1])):
+#                elbabsaufer[args[0]] = args[1]
+#                message = "%s wird bei %s absaufen\n" % args[0], args[1]
+#            else:
+#                message = "%s saeuft bei %s ab!\n" % args[0], elbabsaufer[args[0]]
+#                    
+#    
+        
+        content = json.loads(data.content)
+        #pprint.pprint(content)
+
+        pegel = content.get('value')
+
+        message += 'Pegelstand: %d cm\n' % pegel
+        
+        return message
+
+
 
 if __name__ == "__main__":
     #start Server
     while True:
         pentabot = pentaBot(secret.get('pentaBotSecret', 'username'), secret.get('pentaBotSecret', 'password'), secret.get('pentaBotSecret', 'resource'), bool(secret.get('pentaBotSecret', 'debug')))
-        #pentabot.join_room(config.get("muc", "chan"), config.get("muc", "name"))
+        pentabot.join_room(config.get("muc", "chan"), config.get("muc", "name"))
         pentabot.serve_forever()
