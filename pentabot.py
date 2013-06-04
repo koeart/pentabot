@@ -299,6 +299,7 @@ class pentaBot(JabberBot):
             full_url = config.get("abfahrt", "url") + "?" + url_values
 
             data = urllib2.urlopen(full_url)
+            dare = data.read()
 
             abfahrt += "\n"
             abfahrt += "%6s %-19s %7s\n" % ("Linie", "Richtung", "Abfahrt")
