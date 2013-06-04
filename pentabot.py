@@ -197,8 +197,8 @@ class pentaBot(JabberBot):
         ddate = ''
         if len(args) <= 1 :
             ddate += os.popen('/usr/bin/ddate').read()
-        elif len(args) == 3:
-            ddate += os.popen('/usr/bin/ddate '+str(int(args[0]))+' '+ str(int(args[1]))+' '+ str(int(args[2]))).read()
+        elif len(args) == 3 and all(arg.isdigit() for arg in args):
+            ddate += os.popen('/usr/bin/ddate ' + args[0] + ' ' + args[1] + ' ' + args[2]).read()
         else:
             ddate = 'You are not using correctly!\n Just enter ddate or append day month year'
         return ddate
@@ -300,15 +300,12 @@ class pentaBot(JabberBot):
 
             data = urllib2.urlopen(full_url)
             dare = data.read()
-            dare = dare.replace("[[", "")
-            dare = dare.replace("]]", "")
 
             abfahrt += "\n"
             abfahrt += "%6s %-19s %7s\n" % ("Linie", "Richtung", "Abfahrt")
 
-            for line in dare.split("],["):
-                outp = line.replace("\"", "").split(",")
-                abfahrt += "%6s %-19s %7s\n" % (outp[0], outp[1], outp[2])
+            for line in json.loads(dare):
+                abfahrt += "%6s %-19s %7s\n" % (line[0], line[1], line[2])
 
         return abfahrt
 
