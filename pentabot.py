@@ -299,16 +299,12 @@ class pentaBot(JabberBot):
             full_url = config.get("abfahrt", "url") + "?" + url_values
 
             data = urllib2.urlopen(full_url)
-            dare = data.read()
-            dare = dare.replace("[[", "")
-            dare = dare.replace("]]", "")
 
             abfahrt += "\n"
             abfahrt += "%6s %-19s %7s\n" % ("Linie", "Richtung", "Abfahrt")
 
-            for line in dare.split("],["):
-                outp = line.replace("\"", "").split(",")
-                abfahrt += "%6s %-19s %7s\n" % (outp[0], outp[1], outp[2])
+            for line in json.loads(dare):
+                abfahrt += "%6s %-19s %7s\n" % (line[0], line[1], line[2])
 
         return abfahrt
 
