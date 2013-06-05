@@ -379,7 +379,7 @@ class pentaBot(JabberBot):
 
         pegel = content.get('value')
 
-        message += 'Pegelstand: %d cm\n' % pegel
+        message += 'Pegelstand: %d cm' % pegel
         
         return message
 
