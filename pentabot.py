@@ -286,10 +286,15 @@ class pentaBot(JabberBot):
             abfahrt = ""
             if len(args) == 1:
                 laufzeit = config.get("abfahrt", "laufzeit")
-                haltestelle = " ".join(args[0:])
+                haltestelle = args[0]
             else:
-                laufzeit = args[-1]
-                haltestelle = " ".join(args[0:-1])
+                if args[-1].isdigit():
+                    laufzeit = args[-1]
+                    haltestelle = " ".join(args[0:-1])
+                else:
+                    laufzeit = config.get("abfahrt", "laufzeit")
+                    haltestelle = " ".join(args[0:])
+
             values = {"ort": "Dresden",
                       "hst": haltestelle,
                       "vz": laufzeit,
