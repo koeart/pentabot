@@ -17,6 +17,7 @@ import sys
 import os
 import json
 import requests
+import logging
 
 # secret
 secretfile = ".pentabot.login"
