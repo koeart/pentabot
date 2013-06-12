@@ -85,6 +85,15 @@ class pentaBot(JabberBot):
     koeart <at remove this> zwoelfelf <this as well> <net>
     """
 
+    def __init__( self, jid, password, res = None, debug=False):
+        super( pentaBot, self).__init__( jid, password, res, debug)
+        if debug:
+            chandler = logging.StreamHandler()
+            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            chandler.setFormatter(formatter)
+            self.log.addHandler(chandler)
+            self.log.setLevel(logging.DEBUG)
+
     def _checkGroup(self, jid, group):
         """
         Gibt Gruppenzugehoerigkeit als Bool
@@ -300,7 +309,12 @@ class pentaBot(JabberBot):
                       "vz": laufzeit,
                       "timestamp": int(time.time())}
 
-            url_values = urllib.urlencode(values)
+            # fix unicode issues of urlencode
+            encoded_values = {}
+            for k, v in values.iteritems():
+                encoded_values[k] = unicode(v).encode('utf-8')
+            url_values = urllib.urlencode(encoded_values)
+
             full_url = config.get("abfahrt", "url") + "?" + url_values
 
             data = urllib2.urlopen(full_url)
