@@ -300,7 +300,12 @@ class pentaBot(JabberBot):
                       "vz": laufzeit,
                       "timestamp": int(time.time())}
 
-            url_values = urllib.urlencode(values)
+            # fix unicode issues of urlencode
+            encoded_values = {}
+            for k, v in values.iteritems():
+                encoded_values[k] = unicode(v).encode('utf-8')
+            url_values = urllib.urlencode(encoded_values)
+
             full_url = config.get("abfahrt", "url") + "?" + url_values
 
             data = urllib2.urlopen(full_url)
