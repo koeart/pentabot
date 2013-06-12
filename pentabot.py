@@ -17,6 +17,7 @@ import sys
 import os
 import json
 import requests
+import logging
 
 # secret
 secretfile = ".pentabot.login"
@@ -84,6 +85,15 @@ class pentaBot(JabberBot):
     For more info: http://github.com/koeart/pentabot
     koeart <at remove this> zwoelfelf <this as well> <net>
     """
+
+    def __init__( self, jid, password, res = None, debug=False):
+        super( pentaBot, self).__init__( jid, password, res, debug)
+        if debug:
+            chandler = logging.StreamHandler()
+            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            chandler.setFormatter(formatter)
+            self.log.addHandler(chandler)
+            self.log.setLevel(logging.DEBUG)
 
     def _checkGroup(self, jid, group):
         """
@@ -286,16 +296,26 @@ class pentaBot(JabberBot):
             abfahrt = ""
             if len(args) == 1:
                 laufzeit = config.get("abfahrt", "laufzeit")
-                haltestelle = " ".join(args[0:])
+                haltestelle = args[0]
             else:
-                laufzeit = args[-1]
-                haltestelle = " ".join(args[0:-1])
+                if args[-1].isdigit():
+                    laufzeit = args[-1]
+                    haltestelle = " ".join(args[0:-1])
+                else:
+                    laufzeit = config.get("abfahrt", "laufzeit")
+                    haltestelle = " ".join(args[0:])
+
             values = {"ort": "Dresden",
                       "hst": haltestelle,
                       "vz": laufzeit,
                       "timestamp": int(time.time())}
 
-            url_values = urllib.urlencode(values)
+            # fix unicode issues of urlencode
+            encoded_values = {}
+            for k, v in values.iteritems():
+                encoded_values[k] = unicode(v).encode('utf-8')
+            url_values = urllib.urlencode(encoded_values)
+
             full_url = config.get("abfahrt", "url") + "?" + url_values
 
             data = urllib2.urlopen(full_url)
@@ -376,7 +396,7 @@ class pentaBot(JabberBot):
 
         pegel = content.get('value')
 
-        message += 'Pegelstand: %d cm\n' % pegel
+        message += 'Pegelstand: %d cm' % pegel
         
         return message
 
