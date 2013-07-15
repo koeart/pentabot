@@ -406,5 +406,8 @@ if __name__ == "__main__":
     #start Server
     while True:
         pentabot = pentaBot(secret.get('pentaBotSecret', 'username'), secret.get('pentaBotSecret', 'password'), secret.get('pentaBotSecret', 'resource'), bool(secret.get('pentaBotSecret', 'debug')))
-        pentabot.join_room(config.get("muc", "chan"), config.get("muc", "name"))
+        lChan = config.get("muc", "chan").split(',')
+        lNick = config.get("muc", "name").split(',')
+        for _int in range(0, len(lChan)):
+            pentabot.join_room(lChan[_int], lNick[0] if len(lNick) == 1 else lNick[_int])
         pentabot.serve_forever()
