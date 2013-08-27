@@ -305,7 +305,7 @@ class pentaBot(JabberBot):
                     laufzeit = config.get("abfahrt", "laufzeit")
                     haltestelle = " ".join(args[0:])
 
-            values = {"ort": "Dresden",
+            values = {"ort": "Radebeul",
                       "hst": haltestelle,
                       "vz": laufzeit,
                       "timestamp": int(time.time())}
@@ -405,7 +405,7 @@ class pentaBot(JabberBot):
 if __name__ == "__main__":
     #start Server
     while True:
-        pentabot = pentaBot(secret.get('pentaBotSecret', 'username'), secret.get('pentaBotSecret', 'password'), secret.get('pentaBotSecret', 'resource'), bool(secret.get('pentaBotSecret', 'debug')))
+        pentabot = pentaBot(secret.get('pentaBotSecret', 'username'), secret.get('pentaBotSecret', 'password'), secret.get('pentaBotSecret', 'resource'))
         lChan = config.get("muc", "chan").split(',')
         lNick = config.get("muc", "name").split(',')
         for _int in range(0, len(lChan)):
