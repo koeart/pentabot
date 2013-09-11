@@ -367,7 +367,7 @@ class pentaBot(JabberBot):
         aktueller elbpegel
         '''
         message = ""
-        url = 'http://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/DRESDEN/W/currentmeasurement.json'
+        url = config.get("elbe", "url")
         params = dict(
             includeTimeseries='false',
             includeCurrentMeasurement='true',
