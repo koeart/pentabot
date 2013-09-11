@@ -442,7 +442,7 @@ class pentaBot(JabberBot):
         elif args[0] == "contact":
             if len(args) == 1:
                 message = "Du kannst waehlen zwischen:\n"
-                message =+ contact_help_msg
+                message += contact_help_msg
             elif args[1] == "all":
                 message += "Du kannst uns unter dieser Festnetznummer erreichen: +" + content.get("contact").get("phone") + " .\n"
                 message += "Wir sind auf Twitter unter: https://twitter.com/" + content.get("contact").get("twitter") + " zu finden.\n"
