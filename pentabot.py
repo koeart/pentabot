@@ -448,7 +448,7 @@ class pentaBot(JabberBot):
                 message += "Wir sind auf Twitter unter: https://twitter.com/" + content.get("contact").get("twitter") + " zu finden.\n"
                 message += "Im IRC findest du uns hier: " + content.get("contact").get("irc") + "\n"
                 message += "Im Jabber vom C3D2 findest du uns im Raum " + content.get("contact").get("jabber") + " .\n"
-                message += "Fals du uns auf der Mailingliste folgen willst meld dich einfach hier an: " + content.get("contact").get("ml") + "\n"
+                message += "Fals du uns auf der Mailingliste folgen willst meld dich einfach hier an: " + _obfuscate_email_address(content.get("contact").get("ml")) + "\n"
             elif args[1] == "phone":
                 message += "Du kannst uns unter dieser Festnetznummer erreichen: +" + content.get("contact").get("phone") + " ."
             elif args[1] == "twitter":
@@ -458,7 +458,7 @@ class pentaBot(JabberBot):
             elif args[1] == "jabber":
                 message += "Im Jabber vom C3D2 findest du uns im Raum " + content.get("contact").get("jabber") + " ."
             elif args[1] == "ml":
-                message += "Fals du uns auf der Mailingliste folgen willst meld dich einfach hier an: " + content.get("contact").get("ml")
+                message += "Fals du uns auf der Mailingliste folgen willst meld dich einfach hier an: " + _obfuscate_email_address(content.get("contact").get("ml"))
             else:
                 message += "Probier es noch mal mit einer der folgenden Optionen: all, phone, twitter, jabber, irc oder ml."
         elif args[0] == "feeds":
@@ -476,7 +476,8 @@ class pentaBot(JabberBot):
         return message
 
 
-
+def _obfuscate_email_address(address):
+    return address.replace('@', ' @at ').replace('.', 'dot')
 
 if __name__ == "__main__":
     #start Server
