@@ -400,6 +400,7 @@ class pentaBot(JabberBot):
         
         return message
 
+    @botcmd
     def hq(self, mess, args):
         '''
         Information die ueber http://www.hq.c3d2.de/spaceapi.json auszulesen sind
