@@ -406,13 +406,13 @@ class pentaBot(JabberBot):
         Information die ueber http://www.hq.c3d2.de/spaceapi.json auszulesen sind
         '''
         message = ""
-        contact_help_msg += "        all         Zeigt dir alle Daten\n"
+        contact_help_msg = "        all         Zeigt dir alle Daten\n"
         contact_help_msg += "        phone       Zeigt dir die Festnetz Nummer unter der wir erreichbar sind\n"
         contact_help_msg += "        twitter     Zeigt dir das Voegelchen unter dem wir schreiben oder erreichbar sind\n"
         contact_help_msg += "        jabber      Zeigt dir die den MUC unter der wir erreichbar sind\n"
         contact_help_msg += "        irc         Zeigt dir wie du uns im IRC erreichen kannst\n"
         contact_help_msg += "        ml          Zeigt dir auf welcher Mailingliste du uns erreichen kannst\n"
-        feeds_help_msg += "        rss         Zeigt dir die RSS Feed URL\n"
+        feeds_help_msg = "        rss         Zeigt dir die RSS Feed URL\n"
         feeds_help_msg += "        atom        Zeigt dir die Atom Feed URL\n"
         help_msg = "Benutze: hq <option> (<option>)\n"
         help_msg += "Optionen:\n"
