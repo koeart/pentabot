@@ -406,75 +406,73 @@ class pentaBot(JabberBot):
         Information die ueber http://www.hq.c3d2.de/spaceapi.json auszulesen sind
         '''
         message = ""
+        contact_help_msg += "        all         Zeigt dir alle Daten\n"
+        contact_help_msg += "        phone       Zeigt dir die Festnetz Nummer unter der wir erreichbar sind\n"
+        contact_help_msg += "        twitter     Zeigt dir das Voegelchen unter dem wir schreiben oder erreichbar sind\n"
+        contact_help_msg += "        jabber      Zeigt dir die den MUC unter der wir erreichbar sind\n"
+        contact_help_msg += "        irc         Zeigt dir wie du uns im IRC erreichen kannst\n"
+        contact_help_msg += "        ml          Zeigt dir auf welcher Mailingliste du uns erreichen kannst\n"
+        feeds_help_msg += "        rss         Zeigt dir die RSS Feed URL\n"
+        feeds_help_msg += "        atom        Zeigt dir die Atom Feed URL\n"
+        help_msg = "Benutze: hq <option> (<option>)\n"
+        help_msg += "Optionen:\n"
+        help_msg += "    status          Zeigt dir den Status (offen/zu) vom HQ\n"
+        help_msg += "    coords          Zeigt dir die Koordinaten des HQ\n"
+        help_msg += "    contact         Zeigt dir Kontakt Daten zum HQ\n"
+        help_msg += contact_help_msg
+        help_msg += "    web             Zeigt dir den Link zu unserer Web Seite\n"
+        help_msg += "    feeds           Zeigt dir die News Feeds des C3D2\n"
+        help_msg += feeds_help_msg
+
         url = config.get("hq", "url")
         data = requests.get(url=url)
         content = json.loads(data.content)
 
         args = args.strip().split(' ')
 
-        if len(args) < 1:
-            message += "Benutze: hq <option> (<option>)"
-            message += "Optionen:"
-            message += "    status          Zeigt dir den Status (offen/zu) vom HQ"
-            message += "    coords          Zeigt dir die Koordinaten des HQ"
-            message += "    contact         Zeigt dir Kontakt Daten zum HQ"
-            message += "        all         Zeigt dir alle Daten"
-            message += "        phone       Zeigt dir die Festnetz Nummer unter der wir erreichbar sind"
-            message += "        twitter     Zeigt dir das Voegelchen unter dem wir schreiben oder erreichbar sind"
-            message += "        jabber      Zeigt dir die den MUC unter der wir erreichbar sind"
-            message += "        irc         Zeigt dir wie du uns im IRC erreichen kannst"
-            message += "        ml          Zeigt dir auf welcher Mailingliste du uns erreichen kannst"
-            message += "    web             Zeigt dir den Link zu unserer Web Seite"
-            message += "    feeds           Zeigt dir die News Feeds des C3D2"
-            message += "        rss         Zeigt dir die RSS Feed URL"
-            message += "        atom        Zeigt dir die Atom Feed URL"
-        else:
-            if args[0] == "status":
-                message += content.get("status")
-            elif args[0] == "coords":
-                message += "Das HQ findest du unter Latitude: " + content.get("lat") + " und Longitude: " + content.get("lon") + " ."
-            elif args[0] == "web":
-                message += "Der Chaos Computer Club Dresden (C3D2) ist im Web erreichbar unter " + content.get("url") + " ."
-            elif args[0] == "contact":
-                if len(args) == 1:
-                    message += "Du kannst waehlen zwischen:"
-                    message += "    all         Zeigt dir alle Daten"
-                    message += "    phone       Zeigt dir die Festnetz Nummer unter der wir erreichbar sind"
-                    message += "    twitter     Zeigt dir das Voegelchen unter dem wir schreiben oder erreichbar sind"
-                    message += "    jabber      Zeigt dir die den MUC unter der wir erreichbar sind"
-                    message += "    irc         Zeigt dir wie du uns im IRC erreichen kannst"
-                    message += "    ml          Zeigt dir auf welcher Mailingliste du uns erreichen kannst"
-                elif args[1] == "all":
-                    message += "Du kannst uns unter dieser Festnetznummer erreichen: +" + content.get("contact").get("phone") + " ."
-                    message += "Wir sind auf Twitter unter: https://twitter.com/" + content.get("contact").get("twitter") + " zu finden."
-                    message += "Im IRC findest du uns hier: " + content.get("contact").get("irc")
-                    message += "Im Jabber vom C3D2 findest du uns im Raum " + content.get("contact").get("jabber") + " ."
-                    message += "Fals du uns auf der Mailingliste folgen willst meld dich einfach hier an: " + content.get("contact").get("ml")
-                elif args[1] == "phone":
-                    message += "Du kannst uns unter dieser Festnetznummer erreichen: +" + content.get("contact").get("phone") + " ."
-                elif args[1] == "twitter":
-                    message += "Wir sind auf Twitter unter: https://twitter.com/" + content.get("contact").get("twitter") + " zu finden."
-                elif args[1] == "irc":
-                    message += "Im IRC findest du uns hier: " + content.get("contact").get("irc")
-                elif args[1] == "jabber":
-                    message += "Im Jabber vom C3D2 findest du uns im Raum " + content.get("contact").get("jabber") + " ."
-                elif args[1] == "ml":
-                    message += "Fals du uns auf der Mailingliste folgen willst meld dich einfach hier an: " + content.get("contact").get("ml")
-                else:
-                    message += "Probier es noch mal mit einer der folgenden Optionen: all, phone, twitter, jabber, irc oder ml."
-            elif args[0] == "feeds":
-                if len(args) == 1:
-                    message += "Du kannst waehlen zwischen:"
-                    message += "    rss         Zeigt dir die RSS Feed URL"
-                    message += "    atom        Zeigt dir die Atom Feed URL"
-                elif args[1] == "rss":
-                    message += "Den RSS Feed zu den C3D2 News findest du hier: " + content.get("feeds")[0].get("url")
-                elif args[1] == "atom":
-                    message += "Den Atom Feed zu den C3D2 News findest du hier: " + content.get("feeds")[1].get("url")
-                else:
-                    message += "Probier es noch mal mit einer der folgenden Optionen: rss oder atom."
+
+        if not args[0]:
+            message = help_msg
+        elif args[0] == "status":
+            message += content.get("status")
+        elif args[0] == "coords":
+            message += "Das HQ findest du unter Latitude: " + str(content.get("lat")) + " und Longitude: " + str(content.get("lon")) + " ."
+        elif args[0] == "web":
+            message += "Der Chaos Computer Club Dresden (C3D2) ist im Web erreichbar unter " + content.get("url") + " ."
+        elif args[0] == "contact":
+            if len(args) == 1:
+                message = "Du kannst waehlen zwischen:\n"
+                message =+ contact_help_msg
+            elif args[1] == "all":
+                message += "Du kannst uns unter dieser Festnetznummer erreichen: +" + content.get("contact").get("phone") + " .\n"
+                message += "Wir sind auf Twitter unter: https://twitter.com/" + content.get("contact").get("twitter") + " zu finden.\n"
+                message += "Im IRC findest du uns hier: " + content.get("contact").get("irc") + "\n"
+                message += "Im Jabber vom C3D2 findest du uns im Raum " + content.get("contact").get("jabber") + " .\n"
+                message += "Fals du uns auf der Mailingliste folgen willst meld dich einfach hier an: " + content.get("contact").get("ml") + "\n"
+            elif args[1] == "phone":
+                message += "Du kannst uns unter dieser Festnetznummer erreichen: +" + content.get("contact").get("phone") + " ."
+            elif args[1] == "twitter":
+                message += "Wir sind auf Twitter unter: https://twitter.com/" + content.get("contact").get("twitter") + " zu finden."
+            elif args[1] == "irc":
+                message += "Im IRC findest du uns hier: " + content.get("contact").get("irc")
+            elif args[1] == "jabber":
+                message += "Im Jabber vom C3D2 findest du uns im Raum " + content.get("contact").get("jabber") + " ."
+            elif args[1] == "ml":
+                message += "Fals du uns auf der Mailingliste folgen willst meld dich einfach hier an: " + content.get("contact").get("ml")
             else:
-                message += "Probier es noch mal mit einer der folgenden Optionen: status, coords, contact, web oder feeds."
+                message += "Probier es noch mal mit einer der folgenden Optionen: all, phone, twitter, jabber, irc oder ml."
+        elif args[0] == "feeds":
+            if len(args) == 1:
+                message += "Du kannst waehlen zwischen:\n"
+                message += feeds_help_msg
+            elif args[1] == "rss":
+                message += "Den RSS Feed zu den C3D2 News findest du hier: " + content.get("feeds")[0].get("url")
+            elif args[1] == "atom":
+                message += "Den Atom Feed zu den C3D2 News findest du hier: " + content.get("feeds")[1].get("url")
+            else:
+                message += "Probier es noch mal mit einer der folgenden Optionen: rss oder atom."
+        else:
+            message += "Probier es noch mal mit einer der folgenden Optionen: status, coords, contact, web oder feeds."
         return message
 
 
