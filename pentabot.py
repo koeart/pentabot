@@ -434,7 +434,7 @@ class pentaBot(JabberBot):
         if not args[0]:
             message = help_msg
         elif args[0] == "status":
-            message += content.get("status")
+            message += "Our lovely " + content.get("status")
         elif args[0] == "coords":
             message += "Das HQ findest du unter Latitude: " + str(content.get("lat")) + " und Longitude: " + str(content.get("lon")) + " ."
         elif args[0] == "web":
