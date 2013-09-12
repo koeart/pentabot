@@ -360,7 +360,16 @@ class pentaBot(JabberBot):
         else:
             message = 'Bitte rufe \"help last\" fuer moegliche Optionen auf!'
         return message
-        
+
+    #helper for latitude longitude to german
+    def stroflatlog_de(self,latitude , longitude):
+        southnorth = ("nördlicher","südlicher")[int(latitude < 0)]
+        snshort = ("N", "S")[int(latitude < 0)]
+        eastwest = ("östlicher","westlicher")[int(longitude < 0 )]
+        ewshort = ("E", "W")[int(longitude<0)]
+        return "%f %s Breite und %f %s Länge { %f°%s %f°%s }"%(abs(latitude),southnorth,abs(longitude),eastwest,abs(latitude),snshort,abs(longitude),ewshort)
+
+
     @botcmd
     def elbe(self, mess, args):
         '''
@@ -388,16 +397,13 @@ class pentaBot(JabberBot):
 #                message = "%s wird bei %s absaufen\n" % args[0], args[1]
 #            else:
 #                message = "%s saeuft bei %s ab!\n" % args[0], elbabsaufer[args[0]]
-#                    
-#    
-        
+
         content = json.loads(data.content)
         #pprint.pprint(content)
 
         pegel = content.get('value')
 
         message += 'Pegelstand: %d cm' % pegel
-        
         return message
 
     @botcmd
@@ -436,7 +442,7 @@ class pentaBot(JabberBot):
         elif args[0] == "status":
             message += "Our lovely " + content.get("status")
         elif args[0] == "coords":
-            message += "Das HQ findest du unter Latitude: " + str(content.get("lat")) + " und Longitude: " + str(content.get("lon")) + " ."
+            message += "Das HQ findest du auf %s ."%(self.stroflatlog_de(content.get("lat") , content.get("lon")))
         elif args[0] == "web":
             message += "Der Chaos Computer Club Dresden (C3D2) ist im Web erreichbar unter " + content.get("url") + " ."
         elif args[0] == "contact":
