@@ -362,7 +362,7 @@ class pentaBot(JabberBot):
         return message
 
     #helper for latitude longitude to german
-    def stroflatlog_de(latitude , longitude):
+    def stroflatlog_de(self,latitude , longitude):
         southnorth = ("nördlicher","südlicher")[int(latitude < 0)]
         snshort = ("N", "S")[int(latitude < 0)]
         eastwest = ("östlicher","westlicher")[int(longitude < 0 )]
@@ -442,7 +442,7 @@ class pentaBot(JabberBot):
         elif args[0] == "status":
             message += "Our lovely " + content.get("status")
         elif args[0] == "coords":
-            message += "Das HQ findest du auf %s ."%(stroflatlog_de(content.get("lat") , content.get("lon")))
+            message += "Das HQ findest du auf %s ."%(self.stroflatlog_de(content.get("lat") , content.get("lon")))
         elif args[0] == "web":
             message += "Der Chaos Computer Club Dresden (C3D2) ist im Web erreichbar unter " + content.get("url") + " ."
         elif args[0] == "contact":
