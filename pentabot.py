@@ -14,6 +14,7 @@ import os
 import json
 import requests
 import logging
+from decorators import ignore_msg_from_self
 
 # secret
 secretfile = ".pentabot.login"
@@ -61,6 +62,7 @@ class pentaBot(JabberBot):
         return "%f %s Breite und %f %s Länge { %f°%s %f°%s }" % (abs(latitude), southnorth, abs(longitude), eastwest, abs(latitude), snshort, abs(longitude), ewshort)
 
     @botcmd
+    @ignore_msg_from_self
     def helloworld(self, mess, args):
         """
         Hello World, the botway
@@ -68,6 +70,7 @@ class pentaBot(JabberBot):
         return 'Hello World, the botway!'
 
     @botcmd
+    @ignore_msg_from_self
     def echo(self, mess, args):
         """
         ein echo fuer die welt
@@ -75,6 +78,7 @@ class pentaBot(JabberBot):
         return args
 
     @botcmd
+    @ignore_msg_from_self
     def thetime(self, mess, args):
         """
         Zeige die aktuelle Server Zeit
@@ -82,6 +86,7 @@ class pentaBot(JabberBot):
         return str(datetime.datetime.now())
 
     @botcmd
+    @ignore_msg_from_self
     def rot13(self, mess, args):
         """
         Gibt <string> in rot13
@@ -89,6 +94,7 @@ class pentaBot(JabberBot):
         return args.encode('rot13')
 
     @botcmd
+    @ignore_msg_from_self
     def whoami(self, mess, args):
         """
         Zeigt dir dein Username
@@ -99,6 +105,7 @@ class pentaBot(JabberBot):
             return mess.getFrom().getStripped()
 
     @botcmd
+    @ignore_msg_from_self
     def serverinfo(self, mess, args):
         """
         Zeige Informationen ueber den Server
@@ -109,6 +116,7 @@ class pentaBot(JabberBot):
         return '%s\n\n%s' % ( version, loadavg, )
 
     @botcmd
+    @ignore_msg_from_self
     def fortune(self, mess, args):
         """
         Fortune Cookie for you
@@ -124,6 +132,7 @@ class pentaBot(JabberBot):
         return ('Your Cookie reads:\n' + fortune)
 
     @botcmd
+    @ignore_msg_from_self
     def ddate(self, mess, args):
         """
         Perpetual date converter from gregorian to poee calendar
@@ -140,6 +149,7 @@ class pentaBot(JabberBot):
 
     @format_help
     @botcmd
+    @ignore_msg_from_self
     def last(self, mess, args):
         """
         Gibt die letzten News zu PentaCast, PentaRadio und PentaMusic wieder
@@ -161,6 +171,7 @@ class pentaBot(JabberBot):
         return message
 
     @botcmd
+    @ignore_msg_from_self
     def elbe(self, mess, args):
         """
         aktueller elbpegel
@@ -181,6 +192,7 @@ class pentaBot(JabberBot):
         return message
 
     @botcmd
+    @ignore_msg_from_self
     def abfahrt(self, mess, args):
         """
         Abfahrtsmonitor
@@ -225,6 +237,7 @@ class pentaBot(JabberBot):
         return abfahrt
 
     @botcmd
+    @ignore_msg_from_self
     def hq(self, mess, args):
         """
         Information die ueber http://www.hq.c3d2.de/spaceapi.json auszulesen sind
@@ -257,7 +270,7 @@ class pentaBot(JabberBot):
         if not args[0]:
             message = help_msg
         elif args[0] == "status":
-            message += "Our lovely " + content.get("status")
+            message += content.get("status")
         elif args[0] == "coords":
             message += "Das HQ findest du auf %s ."%(self._stroflatlog_de(content.get("lat") , content.get("lon")))
         elif args[0] == "web":
