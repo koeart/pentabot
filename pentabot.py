@@ -6,15 +6,9 @@
 
 from jabberbot import JabberBot, botcmd
 import ConfigParser
-import feedparser
-import datetime
-import time
-import urllib
-import os
-import json
-import requests
 import logging
-from decorators import ignore_msg_from_self
+import botcommands
+import inspect
 
 # secret
 secretfile = ".pentabot.login"
@@ -30,9 +24,6 @@ config.read([configfile, configfile])
 feed_help= {}
 feed_help['lastrss']= "\n".join(dict(config.items('RSS')).keys())
 
-def format_help(fun):
-    fun.__doc__ = fun.__doc__.format(**feed_help) #** dict entpacken, * listen entpacken 
-    return fun
 
 class pentaBot(JabberBot):
     """
@@ -51,265 +42,22 @@ class pentaBot(JabberBot):
             self.log.addHandler(chandler)
             self.log.setLevel(logging.DEBUG)
 
-    def _stroflatlog_de(self, latitude, longitude):
-	"""
-	helper for latitude longitude to german
-	"""
-        southnorth = ("nördlicher","südlicher")[int(latitude < 0)]
-        snshort = ("N", "S")[int(latitude < 0)]
-        eastwest = ("östlicher","westlicher")[int(longitude < 0 )]
-        ewshort = ("E", "W")[int(longitude<0)]
-        return "%f %s Breite und %f %s Länge { %f°%s %f°%s }" % (abs(latitude), southnorth, abs(longitude), eastwest, abs(latitude), snshort, abs(longitude), ewshort)
+        self._reload()
+
+    def _reload(self):
+        self.commands = {}
+        for name, value in inspect.getmembers(botcommands):
+            if hasattr(getattr(botcommands, name), '__call__') and getattr(value, '_jabberbot_command', False):
+                self.commands[name] = value
+        for name, value in inspect.getmembers(self):
+            if inspect.ismethod(value) and getattr(value, '_jabberbot_command', False):
+                self.commands[name] = value
+
 
     @botcmd
-    @ignore_msg_from_self
-    def helloworld(self, mess, args):
-        """
-        Hello World, the botway
-        """
-        return 'Hello World, the botway!'
-
-    @botcmd
-    @ignore_msg_from_self
-    def echo(self, mess, args):
-        """
-        ein echo fuer die welt
-        """
-        return args
-
-    @botcmd
-    @ignore_msg_from_self
-    def thetime(self, mess, args):
-        """
-        Zeige die aktuelle Server Zeit
-        """
-        return str(datetime.datetime.now())
-
-    @botcmd
-    @ignore_msg_from_self
-    def rot13(self, mess, args):
-        """
-        Gibt <string> in rot13
-        """
-        return args.encode('rot13')
-
-    @botcmd
-    @ignore_msg_from_self
-    def whoami(self, mess, args):
-        """
-        Zeigt dir dein Username
-        """
-        if mess.getType() == "groupchat":
-            return str(mess.getFrom()).split("/")[1]
-        else:
-            return mess.getFrom().getStripped()
-
-    @botcmd
-    @ignore_msg_from_self
-    def serverinfo(self, mess, args):
-        """
-        Zeige Informationen ueber den Server
-        """
-        version = open('/proc/version').read().strip()
-        loadavg = open('/proc/loadavg').read().strip()
-
-        return '%s\n\n%s' % ( version, loadavg, )
-
-    @botcmd
-    @ignore_msg_from_self
-    def fortune(self, mess, args):
-        """
-        Fortune Cookie for you
-
-        A Cookie you can trust and accept.
-        Just run fortune
-        """
-        fortune = ''
-        try:
-            fortune += os.popen('/usr/games/fortune').read()
-        except:
-            fortune += 'Your fortune unforseeable'
-        return ('Your Cookie reads:\n' + fortune)
-
-    @botcmd
-    @ignore_msg_from_self
-    def ddate(self, mess, args):
-        """
-        Perpetual date converter from gregorian to poee calendar
-        """
-        args = args.strip().split(' ')
-        ddate = ''
-        if len(args) <= 1 :
-            ddate += os.popen('/usr/bin/ddate').read()
-        elif len(args) == 3 and all(arg.isdigit() for arg in args):
-            ddate += os.popen('/usr/bin/ddate ' + args[0] + ' ' + args[1] + ' ' + args[2]).read()
-        else:
-            ddate = 'You are not using correctly!\n Just enter ddate or append day month year'
-        return ddate
-
-    @format_help
-    @botcmd
-    @ignore_msg_from_self
-    def last(self, mess, args):
-        """
-        Gibt die letzten News zu PentaCast, PentaRadio und PentaMusic wieder
-        Moegliche Eingaben:
-        {lastrss}
-        """
-        args = args.strip().split(' ')
-        if args[0] in dict(config.items('RSS')).keys():
-            message = "\n"
-            if len(args) == 1:
-                args.append('1')
-            if int(args[1]) > int(config.get('RSS', "maxfeeds")):
-                args[1] = config.get('RSS', "maxfeeds")
-            for loop in range(int(args[1])):
-                f = feedparser.parse(config.get('RSS', args[0])).get('entries')[loop]
-                message += 'Titel: ' + f.get('title') + '\n' + 'URL: ' + f.get('link') + '\n'
-        else:
-            message = 'Bitte rufe \"help last\" fuer moegliche Optionen auf!'
-        return message
-
-    @botcmd
-    @ignore_msg_from_self
-    def elbe(self, mess, args):
-        """
-        aktueller elbpegel
-        """
-        message = ""
-        url = config.get("elbe", "url")
-        params = dict(
-            includeTimeseries='false',
-            includeCurrentMeasurement='true',
-            waters='ELBE'
-            )
-
-        data = requests.get(url=url)
-        content = json.loads(data.content)
-        pegel = content.get('value')
-
-        message += 'Pegelstand: %d cm' % pegel
-        return message
-
-    @botcmd
-    @ignore_msg_from_self
-    def abfahrt(self, mess, args):
-        """
-        Abfahrtsmonitor
-        Benutze: abfahrt <Haltestellenname>
-        """
-        args = args.strip().split(' ')
-        if len(args) < 1:
-            abfahrt = "Benutze: abfahrt <Haltestellenname>"
-        else:
-            abfahrt = ""
-            if len(args) == 1:
-                laufzeit = config.get("abfahrt", "laufzeit")
-                haltestelle = args[0]
-            else:
-                if args[-1].isdigit():
-                    laufzeit = args[-1]
-                    haltestelle = " ".join(args[0:-1])
-                else:
-                    laufzeit = config.get("abfahrt", "laufzeit")
-                    haltestelle = " ".join(args[0:])
-
-            values = {"ort": "Dresden",
-                      "hst": haltestelle,
-                      "vz": laufzeit,
-                      "timestamp": int(time.time())}
-
-            # fix unicode issues of urlencode
-            encoded_values = {}
-            for key, value in values.iteritems():
-                encoded_values[key] = unicode(value).encode('utf-8')
-            url_values = urllib.urlencode(encoded_values)
-
-            full_url = config.get("abfahrt", "url") + "?" + url_values
-            data = requests.get(url=full_url)
-
-            abfahrt += "\n"
-            abfahrt += "%6s %-19s %7s\n" % ("Linie", "Richtung", "Abfahrt")
-
-            for line in json.loads(data.content):
-                abfahrt += "%6s %-19s %7s\n" % (line[0], line[1], line[2])
-
-        return abfahrt
-
-    @botcmd
-    @ignore_msg_from_self
-    def hq(self, mess, args):
-        """
-        Information die ueber http://www.hq.c3d2.de/spaceapi.json auszulesen sind
-        """
-        message = ""
-        contact_help_msg = "        all         Zeigt dir alle Daten\n"
-        contact_help_msg += "        phone       Zeigt dir die Festnetz Nummer unter der wir erreichbar sind\n"
-        contact_help_msg += "        twitter     Zeigt dir das Voegelchen unter dem wir schreiben oder erreichbar sind\n"
-        contact_help_msg += "        jabber      Zeigt dir die den MUC unter der wir erreichbar sind\n"
-        contact_help_msg += "        irc         Zeigt dir wie du uns im IRC erreichen kannst\n"
-        contact_help_msg += "        ml          Zeigt dir auf welcher Mailingliste du uns erreichen kannst\n"
-        feeds_help_msg = "        rss         Zeigt dir die RSS Feed URL\n"
-        feeds_help_msg += "        atom        Zeigt dir die Atom Feed URL\n"
-        help_msg = "Benutze: hq <option> (<option>)\n"
-        help_msg += "Optionen:\n"
-        help_msg += "    status          Zeigt dir den Status (offen/zu) vom HQ\n"
-        help_msg += "    coords          Zeigt dir die Koordinaten des HQ\n"
-        help_msg += "    contact         Zeigt dir Kontakt Daten zum HQ\n"
-        help_msg += contact_help_msg
-        help_msg += "    web             Zeigt dir den Link zu unserer Web Seite\n"
-        help_msg += "    feeds           Zeigt dir die News Feeds des C3D2\n"
-        help_msg += feeds_help_msg
-
-        url = config.get("hq", "url")
-        data = requests.get(url=url)
-        content = json.loads(data.content)
-
-        args = args.strip().split(' ')
-
-        if not args[0]:
-            message = help_msg
-        elif args[0] == "status":
-            message += content.get("status")
-        elif args[0] == "coords":
-            message += "Das HQ findest du auf %s ."%(self._stroflatlog_de(content.get("lat") , content.get("lon")))
-        elif args[0] == "web":
-            message += "Der Chaos Computer Club Dresden (C3D2) ist im Web erreichbar unter " + content.get("url") + " ."
-        elif args[0] == "contact":
-            if len(args) == 1:
-                message = "Du kannst waehlen zwischen:\n"
-                message += contact_help_msg
-            elif args[1] == "all":
-                message += "Du kannst uns unter dieser Festnetznummer erreichen: +" + content.get("contact").get("phone") + " .\n"
-                message += "Wir sind auf Twitter unter: https://twitter.com/" + content.get("contact").get("twitter") + " zu finden.\n"
-                message += "Im IRC findest du uns hier: " + content.get("contact").get("irc") + "\n"
-                message += "Im Jabber vom C3D2 findest du uns im Raum " + content.get("contact").get("jabber") + " .\n"
-                message += "Falls du uns auf der Mailingliste folgen willst meld dich einfach hier an: " + content.get("contact").get("ml") + "\n"
-            elif args[1] == "phone":
-                message += "Du kannst uns unter dieser Festnetznummer erreichen: +" + content.get("contact").get("phone") + " ."
-            elif args[1] == "twitter":
-                message += "Wir sind auf Twitter unter: https://twitter.com/" + content.get("contact").get("twitter") + " zu finden."
-            elif args[1] == "irc":
-                message += "Im IRC findest du uns hier: " + content.get("contact").get("irc")
-            elif args[1] == "jabber":
-                message += "Im Jabber vom C3D2 findest du uns im Raum " + content.get("contact").get("jabber") + " ."
-            elif args[1] == "ml":
-                message += "Falls du uns auf der Mailingliste folgen willst meld dich einfach hier an: " + content.get("contact").get("ml")
-            else:
-                message += "Probier es noch mal mit einer der folgenden Optionen: all, phone, twitter, jabber, irc oder ml."
-        elif args[0] == "feeds":
-            if len(args) == 1:
-                message += "Du kannst waehlen zwischen:\n"
-                message += feeds_help_msg
-            elif args[1] == "rss":
-                message += "Den RSS Feed zu den C3D2 News findest du hier: " + content.get("feeds")[0].get("url")
-            elif args[1] == "atom":
-                message += "Den Atom Feed zu den C3D2 News findest du hier: " + content.get("feeds")[1].get("url")
-            else:
-                message += "Probier es noch mal mit einer der folgenden Optionen: rss oder atom."
-        else:
-            message += "Probier es noch mal mit einer der folgenden Optionen: status, coords, contact, web oder feeds."
-        return message
+    def reload(self, msg, args):
+        reload(botcommands)
+        self._reload()
 
 
 if __name__ == "__main__":
