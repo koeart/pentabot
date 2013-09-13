@@ -56,6 +56,9 @@ class pentaBot(JabberBot):
 
     @botcmd
     def reload(self, msg, args):
+        for attr in dir(botcommands):
+            if attr not in ('__name__', '__file__'):
+                delattr(botcommands, attr)
         reload(botcommands)
         self._reload()
 
