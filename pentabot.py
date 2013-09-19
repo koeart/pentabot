@@ -53,7 +53,6 @@ class pentaBot(JabberBot):
         for name, value in inspect.getmembers(self):
             if getattr(value, '_botcmd', False) and name not in [x[0] for x in inspect.getmembers(botcommands)]:
                 delattr(self, name)
-        print inspect.getmembers(self)
         self.commands = {}
         for name, value in inspect.getmembers(self, inspect.ismethod):
             if getattr(value, '_jabberbot_command', False):
