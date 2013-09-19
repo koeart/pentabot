@@ -42,7 +42,6 @@ class pentaBot(JabberBot):
             chandler.setFormatter(formatter)
             self.log.addHandler(chandler)
             self.log.setLevel(logging.DEBUG)
-            self.__command_prefix = command_prefix
 
         self._reload()
 
@@ -50,12 +49,17 @@ class pentaBot(JabberBot):
         for name, value in inspect.getmembers(botcommands):
             if hasattr(getattr(botcommands, name), '__call__') and getattr(value, '_jabberbot_command', False):
                 setattr(self, name, types.MethodType(value, self, self.__class__))
+                setattr(value, '_botcmd', True)
+        for name, value in inspect.getmembers(self):
+            if getattr(value, '_botcmd', False) and name not in [x[0] for x in inspect.getmembers(botcommands)]:
+                delattr(self, name)
+        print inspect.getmembers(self)
         self.commands = {}
         for name, value in inspect.getmembers(self, inspect.ismethod):
             if getattr(value, '_jabberbot_command', False):
                 name = getattr(value, '_jabberbot_command_name')
                 self.log.info('Registered command: %s' % name)
-                self.commands[self.__command_prefix + name] = value
+                self.commands[self._JabberBot__command_prefix + name] = value
 
 
     @botcmd
