@@ -29,7 +29,15 @@ def _stroflatlog_de(latitude, longitude):
 
 @botcmd
 @ignore_msg_from_self
-def helloworld(mess, args):
+def helloself(self, mess, args):
+    """
+    Hello Self, the botway
+    """
+    return 'Hello ' + str(self.jid)
+
+@botcmd
+@ignore_msg_from_self
+def helloworld(self, mess, args):
     """
     Hello World, the botway
     """
@@ -37,7 +45,7 @@ def helloworld(mess, args):
 
 @botcmd
 @ignore_msg_from_self
-def echo(mess, args):
+def echo(self, mess, args):
     """
     ein echo fuer die welt
     """
@@ -45,7 +53,7 @@ def echo(mess, args):
 
 @botcmd
 @ignore_msg_from_self
-def thetime(mess, args):
+def thetime(self, mess, args):
     """
     Zeige die aktuelle Server Zeit
     """
@@ -53,7 +61,7 @@ def thetime(mess, args):
 
 @botcmd
 @ignore_msg_from_self
-def rot13(mess, args):
+def rot13(self, mess, args):
     """
     Gibt <string> in rot13
     """
@@ -61,7 +69,7 @@ def rot13(mess, args):
 
 @botcmd
 @ignore_msg_from_self
-def whoami(mess, args):
+def whoami(self, mess, args):
     """
     Zeigt dir dein Username
     """
@@ -72,7 +80,7 @@ def whoami(mess, args):
 
 @botcmd
 @ignore_msg_from_self
-def serverinfo(mess, args):
+def serverinfo(self, mess, args):
     """
     Zeige Informationen ueber den Server
     """
@@ -83,7 +91,7 @@ def serverinfo(mess, args):
 
 @botcmd
 @ignore_msg_from_self
-def fortune(mess, args):
+def fortune(self, mess, args):
     """
     Fortune Cookie for you
 
@@ -99,7 +107,7 @@ def fortune(mess, args):
 
 @botcmd
 @ignore_msg_from_self
-def ddate(mess, args):
+def ddate(self, mess, args):
     """
     Perpetual date converter from gregorian to poee calendar
     """
@@ -116,7 +124,7 @@ def ddate(mess, args):
 @format_help
 @botcmd
 @ignore_msg_from_self
-def last(mess, args):
+def last(self, mess, args):
     """
     Gibt die letzten News zu PentaCast, PentaRadio und PentaMusic wieder
     Moegliche Eingaben:
@@ -138,7 +146,7 @@ def last(mess, args):
 
 @botcmd
 @ignore_msg_from_self
-def elbe(mess, args):
+def elbe(self, mess, args):
     """
     aktueller elbpegel
     """
@@ -159,7 +167,7 @@ def elbe(mess, args):
 
 @botcmd
 @ignore_msg_from_self
-def abfahrt(mess, args):
+def abfahrt(self, mess, args):
     """
     Abfahrtsmonitor
     Benutze: abfahrt <Haltestellenname>
@@ -204,7 +212,7 @@ def abfahrt(mess, args):
 
 @botcmd
 @ignore_msg_from_self
-def hq(mess, args):
+def hq(self, mess, args):
     """
     Information die ueber http://www.hq.c3d2.de/spaceapi.json auszulesen sind
     """
