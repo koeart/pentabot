@@ -199,14 +199,33 @@ def abfahrt(self, mess, args):
             encoded_values[key] = unicode(value).encode('utf-8')
         url_values = urllib.urlencode(encoded_values)
 
-        full_url = config.get("abfahrt", "url") + "?" + url_values
+        full_url = config.get("abfahrt", "abf_url") + "?" + url_values
         data = requests.get(url=full_url)
 
         abfahrt += "\n"
-        abfahrt += "%6s %-19s %7s\n" % ("Linie", "Richtung", "Abfahrt")
 
-        for line in json.loads(data.content):
-            abfahrt += "%6s %-19s %7s\n" % (line[0], line[1], line[2])
+        if json.loads(data.content):
+            abfahrt += "%6s %-19s %7s\n" % ("Linie", "Richtung", "Abfahrt")
+
+            for line in json.loads(data.content):
+                abfahrt += "%6s %-19s %7s\n" % (line[0], line[1], line[2])
+
+        else:
+            hst_url = config.get("abfahrt", "hst_url") + "?" + url_values
+            data = requests.get(url=hst_url)
+
+            if json.loads(data.content)[1]:
+                abfahrt += "Such dir eine aus:\n"
+                i = 0
+
+                for line in json.loads(data.content)[1]:
+                    i = i + 1
+                    if i <= 10:
+                        abfahrt += "* %s\n" % line[0]
+                    else:
+                        abfahrt += "und viele mehr..."
+                        break
+
 
     return abfahrt
 
