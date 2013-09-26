@@ -202,10 +202,8 @@ def abfahrt(self, mess, args):
         full_url = config.get("abfahrt", "abf_url") + "?" + url_values
         data = requests.get(url=full_url)
 
-        abfahrt += "\n"
-
         if json.loads(data.content):
-            abfahrt += "%6s %-19s %7s\n" % ("Linie", "Richtung", "Abfahrt")
+            abfahrt += "\n%6s %-19s %7s\n" % ("Linie", "Richtung", "Abfahrt")
 
             for line in json.loads(data.content):
                 abfahrt += "%6s %-19s %7s\n" % (line[0], line[1], line[2])
