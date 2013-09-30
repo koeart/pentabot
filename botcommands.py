@@ -84,7 +84,7 @@ def serverinfo(self, mess, args):
     """
     Zeige Informationen ueber den Server
     """
-    version = "".join(map(str, open('/proc/version').read().split(" ")[0:2]))
+    version = " ".join(map(str, open('/proc/version').read().split(" ")[0:3]))
     loadavg = open('/proc/loadavg').read().strip()
 
     return '%s\n\n%s' % ( version, loadavg, )
