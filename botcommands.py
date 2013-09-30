@@ -65,7 +65,7 @@ def gentopic(self,mess,args):
     """
     Generiert einen Vorschlag für ein Gesprächsthema
     """
-    return get_topic()
+    return 'Wie wärs mit „%s“'%get_topic()
 
 @botcmd
 @ignore_msg_from_self
