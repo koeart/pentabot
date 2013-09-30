@@ -11,7 +11,7 @@ import requests
 import logging
 from decorators import ignore_msg_from_self
 from pentabot import feed_help, config
-
+from gen_topic import get_topic
 
 def format_help(fun):
     fun.__doc__ = fun.__doc__.format(**feed_help) #** dict entpacken, * listen entpacken 
@@ -61,11 +61,20 @@ def thetime(self, mess, args):
 
 @botcmd
 @ignore_msg_from_self
+def gentopic(self,mess,args):
+    """
+    Generiert einen Vorschlag für ein Gesprächsthema
+    """
+    return get_topic()
+
+@botcmd
+@ignore_msg_from_self
 def rot13(self, mess, args):
     """
     Gibt <string> in rot13
     """
     return args.encode('rot13')
+
 
 @botcmd
 @ignore_msg_from_self
@@ -86,8 +95,7 @@ def serverinfo(self, mess, args):
     """
     version = " ".join(map(str, open('/proc/version').read().split(" ")[0:3]))
     loadavg = open('/proc/loadavg').read().strip()
-
-	return '%s\nload:\n%s' % ( version, loadavg, )
+    return '%s\nload:\n%s' % ( version, loadavg, )
 
 @botcmd
 @ignore_msg_from_self
