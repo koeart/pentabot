@@ -87,7 +87,7 @@ def serverinfo(self, mess, args):
     version = " ".join(map(str, open('/proc/version').read().split(" ")[0:3]))
     loadavg = open('/proc/loadavg').read().strip()
 
-    return '%s\n\n%s' % ( version, loadavg, )
+	return '%s\nload:\n%s' % ( version, loadavg, )
 
 @botcmd
 @ignore_msg_from_self
