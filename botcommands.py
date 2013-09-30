@@ -12,6 +12,7 @@ import logging
 from decorators import ignore_msg_from_self
 from pentabot import feed_help, config
 from gen_topic import get_topic
+from gen_kickreason import get_kickreason 
 
 def format_help(fun):
     fun.__doc__ = fun.__doc__.format(**feed_help) #** dict entpacken, * listen entpacken 
@@ -65,7 +66,18 @@ def gentopic(self,mess,args):
     """
     Generiert einen Vorschlag für ein Gesprächsthema
     """
-    return get_topic()
+    return 'Wie wärs mit „%s“'%get_topic()
+
+@botcmd
+@ignore_msg_from_self
+def kickrnd(self,mess,args):
+	"""
+	Schmeißt eine zufällig gewählte Person raus
+	"""
+	rnduser = mess.getFrom()
+	self.muc_kick(mess.getTo(),rnduser,get_kickreason())
+	return ":-)"
+
 
 @botcmd
 @ignore_msg_from_self
