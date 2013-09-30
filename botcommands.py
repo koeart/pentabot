@@ -75,7 +75,7 @@ def kickrnd(self,mess,args):
 	Schmeißt eine zufällig gewählte Person raus
 	"""
 	rnduser = mess.getFrom()
-	self.muc_kick(self.myroom,rnduser,get_kickreason())
+	self.muc_kick(mess.getTo(),rnduser,get_kickreason())
 	return ":-)"
 
 
