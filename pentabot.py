@@ -34,7 +34,7 @@ class pentaBot(JabberBot):
     koeart <at remove this> zwoelfelf <this as well> <net>
     """
 
-    def __init__( self, jid, password, res = None, debug=False, command_prefix=''):
+    def __init__( self, jid, password, res = None, debug=False, command_prefix='',myroom=''):
         super( pentaBot, self).__init__( jid, password, res, debug, command_prefix=command_prefix)
         if debug:
             chandler = logging.StreamHandler()
@@ -73,8 +73,8 @@ class pentaBot(JabberBot):
 if __name__ == "__main__":
     #start Server
     while True:
-        pentabot = pentaBot(secret.get('pentaBotSecret', 'username'), secret.get('pentaBotSecret', 'password'), secret.get('pentaBotSecret', 'resource'), bool(secret.get('pentaBotSecret', 'debug')), command_prefix='!')
         lChan = config.get("muc", "chan").split(',')
+        pentabot = pentaBot(secret.get('pentaBotSecret', 'username'), secret.get('pentaBotSecret', 'password'), secret.get('pentaBotSecret', 'resource'), bool(secret.get('pentaBotSecret', 'debug')),myroom=lChan, command_prefix='!')
         lNick = config.get("muc", "name").split(',')
         for _int in range(0, len(lChan)):
             pentabot.join_room(lChan[_int], lNick[0] if len(lNick) == 1 else lNick[_int])
