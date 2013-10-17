@@ -253,6 +253,11 @@ def hq(self, mess, args):
     """
     Information die ueber http://www.hq.c3d2.de/spaceapi.json auszulesen sind
     """
+
+    url = config.get("hq", "url")
+    data = requests.get(url=url)
+    content = json.loads(data.content)
+
     message = ""
     contact_help_msg = "        all         Zeigt dir alle Daten\n"
     contact_help_msg += "        phone       Zeigt dir die Festnetz Nummer unter der wir erreichbar sind\n"
@@ -260,9 +265,10 @@ def hq(self, mess, args):
     contact_help_msg += "        jabber      Zeigt dir die den MUC unter der wir erreichbar sind\n"
     contact_help_msg += "        irc         Zeigt dir wie du uns im IRC erreichen kannst\n"
     contact_help_msg += "        ml          Zeigt dir auf welcher Mailingliste du uns erreichen kannst\n"
-    feeds_help_msg = "        rss         Zeigt dir die RSS Feed URL\n"
-    feeds_help_msg += "        atom        Zeigt dir die Atom Feed URL\n"
-    sensors_help_msg = "       pi         Zeigt die Temperatur von beere.hq.c3d2.de\n"
+    feeds_help_msg = "        blog         Zeigt dir die C3D2-Mews-Feed-URL an\n"
+    feeds_help_msg += "        wiki          Zeigt dir die C3D2-Wiki-Feed-URL an\n"
+    feeds_help_msg += "        calendar   Zeigt dir die C3D2-Kalender-Feed-URL an\n"
+    sensors_help_msg = "       pi         Zeigt die Temperatur von " + content.get("sensors").get("temperature")[0].get("name") + "\n"
     help_msg = "Benutze: hq <option> (<option>)\n"
     help_msg += "Optionen:\n"
     help_msg += "    status          Zeigt dir den Status (offen/zu) vom HQ\n"
@@ -271,22 +277,18 @@ def hq(self, mess, args):
     help_msg += sensors_help_msg
     help_msg += "    contact         Zeigt dir Kontakt Daten zum HQ\n"
     help_msg += contact_help_msg
-    help_msg += "    web             Zeigt dir den Link zu unserer Web Seite\n"
-    help_msg += "    feeds           Zeigt dir die News Feeds des C3D2\n"
+    help_msg += "    web             Zeigt dir den Link zu unserer Webseite\n"
+    help_msg += "    feeds           Zeigt dir die Newsfeeds des C3D2\n"
     help_msg += feeds_help_msg
-
-    url = config.get("hq", "url")
-    data = requests.get(url=url)
-    content = json.loads(data.content)
 
     args = args.strip().split(' ')
 
     if not args[0]:
         message = help_msg
     elif args[0] == "status":
-        message += content.get("status")
+        message += content.get("state").get("message")
     elif args[0] == "coords":
-        message += "Das HQ findest du auf %s ."%(_stroflatlog_de(content.get("lat") , content.get("lon")))
+        message += "Das HQ findest du auf %s ."%(_stroflatlog_de(content.get("location").get("lat") , content.get("location").get("lon")))
     elif args[0] == "web":
         message += "Der Chaos Computer Club Dresden (C3D2) ist im Web erreichbar unter " + content.get("url") + " ."
     elif args[0] == "sensors":
@@ -294,7 +296,7 @@ def hq(self, mess, args):
             message += "Du kannst waehlen zwischen:\n"
             message += sensors_help_msg
         elif args[1] == "pi":
-            message += "Raspberry Pi neben der Tuer: " + str(content.get("sensors").get("temperature")[0].get("value")) + " Grad Celsius"
+            message += content.get("sensors").get("temperature")[0].get("location") + " (" + content.get("sensors").get("temperature")[0].get("name") + "): " + str(content.get("sensors").get("temperature")[0].get("value")) + content.get("sensors").get("temperature")[0].get("unit")
         else:
             message += "Probier es noch mal mit einer der folgenden Optionen: [aktuell nur] pi"
     elif args[0] == "contact":
@@ -323,12 +325,15 @@ def hq(self, mess, args):
         if len(args) == 1:
             message += "Du kannst waehlen zwischen:\n"
             message += feeds_help_msg
-        elif args[1] == "rss":
-            message += "Den RSS Feed zu den C3D2 News findest du hier: " + content.get("feeds")[0].get("url")
-        elif args[1] == "atom":
-            message += "Den Atom Feed zu den C3D2 News findest du hier: " + content.get("feeds")[1].get("url")
+        elif args[1] == "blog":
+            message += "Den Atom-Feed zu den C3D2 News findest du hier: " + content.get("feeds").get("blog").get("url")
+        elif args[1] == "wiki":
+            message += "Den Atom-Feed zum C3D2-Wiki News findest du hier: " + content.get("feeds").get("wiki").get("url")
+        elif args[1] == "calendar":
+            message += "Den iCal-Feed vom C3D2 findest du hier: " + content.get("feeds").get("calendar").get("url")
+
         else:
-            message += "Probier es noch mal mit einer der folgenden Optionen: rss oder atom."
+            message += "Probier es noch mal mit einer der folgenden Optionen: blog, wiki oder calendar."
     else:
         message += "Probier es noch mal mit einer der folgenden Optionen: status, sensors, coords, contact, web oder feeds."
     return message
