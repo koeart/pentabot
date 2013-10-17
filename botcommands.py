@@ -262,10 +262,13 @@ def hq(self, mess, args):
     contact_help_msg += "        ml          Zeigt dir auf welcher Mailingliste du uns erreichen kannst\n"
     feeds_help_msg = "        rss         Zeigt dir die RSS Feed URL\n"
     feeds_help_msg += "        atom        Zeigt dir die Atom Feed URL\n"
+    sensors_help_msg = "       pi         Zeigt die Temperatur von beere.hq.c3d2.de\n"
     help_msg = "Benutze: hq <option> (<option>)\n"
     help_msg += "Optionen:\n"
     help_msg += "    status          Zeigt dir den Status (offen/zu) vom HQ\n"
     help_msg += "    coords          Zeigt dir die Koordinaten des HQ\n"
+    help_msg += "    sensors         Zeigt die Werte der Sensoren im HQ\n"
+    help_msg += sensors_help_msg
     help_msg += "    contact         Zeigt dir Kontakt Daten zum HQ\n"
     help_msg += contact_help_msg
     help_msg += "    web             Zeigt dir den Link zu unserer Web Seite\n"
@@ -286,6 +289,14 @@ def hq(self, mess, args):
         message += "Das HQ findest du auf %s ."%(_stroflatlog_de(content.get("lat") , content.get("lon")))
     elif args[0] == "web":
         message += "Der Chaos Computer Club Dresden (C3D2) ist im Web erreichbar unter " + content.get("url") + " ."
+    elif args[0] == "sensors":
+        if len(args) == 1:
+            message += "Du kannst waehlen zwischen:\n"
+            message += sensors_help_msg
+        elif args[1] == "pi":
+            message += "Raspberry Pi neben der Tuer: " + str(content.get("sensors").get("temperature")[0].get("value")) + " Grad Celsius"
+        else:
+            message += "Probier es noch mal mit einer der folgenden Optionen: [aktuell nur] pi"
     elif args[0] == "contact":
         if len(args) == 1:
             message = "Du kannst waehlen zwischen:\n"
@@ -319,5 +330,5 @@ def hq(self, mess, args):
         else:
             message += "Probier es noch mal mit einer der folgenden Optionen: rss oder atom."
     else:
-        message += "Probier es noch mal mit einer der folgenden Optionen: status, coords, contact, web oder feeds."
+        message += "Probier es noch mal mit einer der folgenden Optionen: status, sensors, coords, contact, web oder feeds."
     return message
