@@ -73,7 +73,7 @@ class pentaBot(JabberBot):
 if __name__ == "__main__":
     #start Server
     while True:
-        pentabot = pentaBot(secret.get('pentaBotSecret', 'username'), secret.get('pentaBotSecret', 'password'), secret.get('pentaBotSecret', 'resource'), command_prefix='!')
+        pentabot = pentaBot(secret.get('pentaBotSecret', 'username'), secret.get('pentaBotSecret', 'password'), secret.get('pentaBotSecret', 'resource'), bool(secret.get('pentaBotSecret', 'debug')), command_prefix='!')
         lChan = config.get("muc", "chan").split(',')
         lNick = config.get("muc", "name").split(',')
         for _int in range(0, len(lChan)):
